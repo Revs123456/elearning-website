@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thinkers Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="brand">Thinkers</div>
+    <button id="menuToggle" class="menu-toggle">☰</button>
+  </header>
+
+  <!-- Left Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <h3>Menu</h3>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" data-view="home" class="sidebar-link active">
+        <span class="icon">🏠</span>
+        <span>Home</span>
+      </a>
+      <a href="#" data-view="account" class="sidebar-link">
+        <span class="icon">👤</span>
+        <span>My Account</span>
+      </a>
+      <a href="#" data-view="enrolled" class="sidebar-link">
+        <span class="icon">📚</span>
+        <span>Courses Enrolled</span>
+      </a>
+      <a href="#" data-view="completed" class="sidebar-link">
+        <span class="icon">✅</span>
+        <span>Modules Completed</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Home View -->
+    <section id="view-home" class="view-section active">
+      <div class="hero">
+        <h1 class="glow"><span id="animatedText"></span></h1>
+        <p class="subtitle">Learn faster. Build smarter. Think bigger.</p>
+      </div>
+
+      <div class="courses-section">
+        <h2>Available Courses</h2>
+        <div id="coursesGrid" class="grid"></div>
+      </div>
+    </section>
+
+    <!-- My Account View -->
+    <section id="view-account" class="view-section">
+      <h2>My Account</h2>
+      <div id="accountInfo" class="account-info"></div>
+    </section>
+
+    <!-- Courses Enrolled View -->
+    <section id="view-enrolled" class="view-section">
+      <h2>Courses Enrolled</h2>
+      <div id="enrolledCourses" class="enrolled-list"></div>
+    </section>
+
+    <!-- Modules Completed View -->
+    <section id="view-completed" class="view-section">
+      <h2>Modules Completed</h2>
+      <div id="completedModules" class="completed-list"></div>
+    </section>
+
+    <!-- Course Detail View -->
+    <section id="view-course-detail" class="view-section">
+      <button id="backToCourses" class="btn ghost">← Back to Courses</button>
+      <div id="courseDetailContent"></div>
+    </section>
+
+    <!-- Certificate Canvas -->
+    <canvas id="certificateCanvas" width="1200" height="850" class="hidden"></canvas>
+    <a id="downloadCert" class="btn secondary hidden" download="certificate.png">Download Certificate</a>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Thinkers Academy</h4>
+        <p>Empowering learners worldwide with cutting-edge technology education.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Legal</h4>
+        <a href="#" id="linkDisclaimer">Disclaimer</a>
+        <a href="#" id="linkPrivacy">Privacy Policy</a>
+        <a href="#" id="linkTerms">Terms of Service</a>
+      </div>
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <p>support@thinkersacademy.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> Thinkers Academy. All rights reserved.</p>
+      <p class="designer-credit">Website designed by <strong>Revanth</strong></p>
+    </div>
+  </footer>
+
+  <!-- Modals -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close" id="closeModal">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="/app.js" defer></script>
+</body>
+</html>
