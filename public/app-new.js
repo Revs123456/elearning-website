@@ -101,8 +101,9 @@ function initEventListeners() {
     openModal('signIn');
   });
   
-  // Auth form submissions - will be attached when modals open
-  // (forms don't exist yet at init time)
+  // Auth form submissions
+  $('#signInForm')?.addEventListener('submit', handleSignIn);
+  $('#createAccountForm')?.addEventListener('submit', handleCreateAccount);
   
   // Sidebar navigation
   $$('.sidebar-link').forEach(link => {
@@ -184,15 +185,12 @@ async function handleSignIn(e) {
 
 async function handleCreateAccount(e) {
   e.preventDefault();
-  console.log('Create account form submitted');
   
   const firstName = $('#firstName').value.trim();
   const lastName = $('#lastName').value.trim();
   const email = $('#signUpEmail').value.trim();
   const password = $('#signUpPassword').value;
   const confirmPassword = $('#confirmPassword').value;
-  
-  console.log('Form values:', { firstName, lastName, email, hasPassword: !!password });
   
   if (!firstName || !lastName || !email || !password || !confirmPassword) {
     alert('Please fill in all fields');
@@ -210,7 +208,6 @@ async function handleCreateAccount(e) {
   }
   
   try {
-    console.log('Calling register API...');
     const data = await api('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({
@@ -221,14 +218,12 @@ async function handleCreateAccount(e) {
       })
     });
     
-    console.log('Registration successful:', data);
     state.user = data.user;
     updateAuthUI();
     closeModal('createAccountModal');
     await loadProgress();
     alert('Account created successfully! Welcome to Frustrated Thinkers!');
   } catch (error) {
-    console.error('Registration error:', error);
     alert(error.message || 'Account creation failed');
   }
 }
@@ -347,15 +342,11 @@ function renderCourseDetail() {
   `;
   
   // Add event listeners to module cards
-  $$('.module').forEach((card, index) => {
-    // Only add click listener to the title, not the whole card
-    const title = card.querySelector('.module-title');
-    if (title) {
-      title.addEventListener('click', () => {
-        const moduleId = card.getAttribute('data-module-id');
-        openModule(moduleId, index);
-      });
-    }
+  $$('.module-card').forEach((card, index) => {
+    card.addEventListener('click', () => {
+      const moduleId = card.getAttribute('data-module-id');
+      openModule(moduleId, index);
+    });
   });
 }
 
@@ -433,11 +424,8 @@ function openModule(moduleId, index) {
 }
 
 // ========================================
-// QUIZ SYSTEM - ONE QUESTION AT A TIME
+// QUIZ SYSTEM
 // ========================================
-
-let currentQuestionIndex = 0;
-let quizAnswers = [];
 
 window.startQuiz = function(moduleId) {
   const module = state.currentCourse?.modules.find(m => m.id === moduleId);
@@ -447,173 +435,104 @@ window.startQuiz = function(moduleId) {
   }
   
   state.currentModule = module;
-  currentQuestionIndex = 0;
-  quizAnswers = new Array(module.quiz.length).fill(null);
+  state.quizAnswers = {};
   
-  renderCurrentQuestion();
+  renderQuiz(module.quiz);
   openModal('quiz');
 };
 
-function renderCurrentQuestion() {
-  const quiz = state.currentModule?.quiz;
-  if (!quiz) return;
-  
-  const q = quiz[currentQuestionIndex];
+function renderQuiz(questions) {
   const quizContent = $('#quizContent');
-  const quizResults = $('#quizResults');
+  if (!quizContent) return;
   
-  if (!quizContent || !quizResults) return;
-  
-  // Hide results
-  quizResults.classList.add('hidden');
-  
-  // Build question HTML
-  let questionHTML = `
-    <div class="quiz-progress">
-      <span>Question ${currentQuestionIndex + 1} of ${quiz.length}</span>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: ${((currentQuestionIndex + 1) / quiz.length) * 100}%"></div>
-      </div>
-    </div>
-    <div class="quiz-question">
-      <h4>${q.question}</h4>
-  `;
-  
-  if (q.type === 'mcq') {
-    questionHTML += q.options.map((option, i) => `
-      <label class="quiz-option">
-        <input type="radio" name="currentQ" value="${i}" ${quizAnswers[currentQuestionIndex] === i ? 'checked' : ''} />
-        <span>${option}</span>
-      </label>
-    `).join('');
-  } else if (q.type === 'fill') {
-    questionHTML += `
-      <input type="text" id="currentAnswer" class="quiz-input" placeholder="Type your answer here..." 
-             value="${quizAnswers[currentQuestionIndex] || ''}" />
-    `;
-  } else if (q.type === 'coding') {
-    questionHTML += `
-      <textarea id="currentAnswer" class="quiz-textarea" rows="6" placeholder="Write your code here...">${quizAnswers[currentQuestionIndex] || ''}</textarea>
-    `;
-  }
-  
-  questionHTML += `
-    </div>
-    <div class="quiz-navigation">
-      <button class="btn secondary" id="prevQuestion" ${currentQuestionIndex === 0 ? 'disabled' : ''}>
-        ← Previous
-      </button>
-      <button class="btn primary" id="nextQuestion">
-        ${currentQuestionIndex === quiz.length - 1 ? 'Finish Quiz' : 'Next →'}
-      </button>
-    </div>
-  `;
-  
-  quizContent.innerHTML = questionHTML;
-  
-  // Attach event listeners
-  $('#prevQuestion')?.addEventListener('click', previousQuestion);
-  $('#nextQuestion')?.addEventListener('click', nextQuestion);
-  
-  // Save answer on change
-  if (q.type === 'mcq') {
-    document.querySelectorAll('input[name="currentQ"]').forEach(input => {
-      input.addEventListener('change', () => {
-        quizAnswers[currentQuestionIndex] = parseInt(input.value);
-      });
-    });
-  } else {
-    $('#currentAnswer')?.addEventListener('input', (e) => {
-      quizAnswers[currentQuestionIndex] = e.target.value;
-    });
-  }
-}
-
-function previousQuestion() {
-  if (currentQuestionIndex > 0) {
-    currentQuestionIndex--;
-    renderCurrentQuestion();
-  }
-}
-
-function nextQuestion() {
-  const quiz = state.currentModule?.quiz;
-  if (!quiz) return;
-  
-  // Save current answer before moving
-  const q = quiz[currentQuestionIndex];
-  if (q.type === 'mcq') {
-    const selected = document.querySelector('input[name="currentQ"]:checked');
-    if (selected) {
-      quizAnswers[currentQuestionIndex] = parseInt(selected.value);
+  quizContent.innerHTML = questions.map((q, index) => {
+    if (q.type === 'mcq') {
+      return `
+        <div class="quiz-question">
+          <h4>Question ${index + 1}: ${q.question}</h4>
+          ${q.options.map((option, i) => `
+            <label>
+              <input type="radio" name="q${index}" value="${i}" />
+              ${option}
+            </label>
+          `).join('')}
+        </div>
+      `;
+    } else if (q.type === 'fill') {
+      return `
+        <div class="quiz-question">
+          <h4>Question ${index + 1}: ${q.question}</h4>
+          <input type="text" id="fill${index}" placeholder="Your answer" />
+        </div>
+      `;
+    } else if (q.type === 'coding') {
+      return `
+        <div class="quiz-question">
+          <h4>Question ${index + 1}: ${q.question}</h4>
+          <textarea id="code${index}" rows="4" placeholder="Write your code here..." 
+                    style="width:100%; padding:12px; background:rgba(0,0,0,.3); 
+                    border:1px solid rgba(0,212,255,.3); border-radius:8px; 
+                    color:var(--text); font-family:'Fira Code',monospace;"></textarea>
+        </div>
+      `;
     }
-  } else {
-    const answer = $('#currentAnswer')?.value;
-    if (answer) {
-      quizAnswers[currentQuestionIndex] = answer;
-    }
-  }
+  }).join('');
   
-  // Move to next or finish
-  if (currentQuestionIndex < quiz.length - 1) {
-    currentQuestionIndex++;
-    renderCurrentQuestion();
-  } else {
-    // Finish quiz
-    gradeQuiz();
-  }
+  // Show quiz modal
+  $('#quizResults').classList.add('hidden');
+  $('#submitQuiz').onclick = submitQuiz;
 }
 
-function gradeQuiz() {
+function submitQuiz() {
   const quiz = state.currentModule?.quiz;
   if (!quiz) return;
   
   let correct = 0;
   let wrong = 0;
   let skipped = 0;
+  const total = quiz.length;
   
   quiz.forEach((q, index) => {
-    const userAnswer = quizAnswers[index];
-    
-    if (userAnswer === null || userAnswer === undefined || userAnswer === '') {
-      skipped++;
-    } else if (q.type === 'mcq') {
-      if (parseInt(userAnswer) === q.correct) {
+    if (q.type === 'mcq') {
+      const selected = document.querySelector(`input[name="q${index}"]:checked`);
+      if (!selected) {
+        skipped++;
+      } else if (parseInt(selected.value) === q.correct) {
         correct++;
       } else {
         wrong++;
       }
     } else if (q.type === 'fill') {
-      if (userAnswer.trim().toLowerCase() === q.answer.toLowerCase()) {
+      const answer = $(`#fill${index}`)?.value.trim().toLowerCase();
+      if (!answer) {
+        skipped++;
+      } else if (answer === q.answer.toLowerCase()) {
         correct++;
       } else {
         wrong++;
       }
     } else if (q.type === 'coding') {
-      const expected = q.answer.toLowerCase().replace(/\s+/g, '');
-      const user = userAnswer.toLowerCase().replace(/\s+/g, '');
-      if (user.includes(expected) || expected.includes(user)) {
-        correct++;
+      const code = $(`#code${index}`)?.value.trim();
+      if (!code) {
+        skipped++;
       } else {
-        wrong++;
+        // Simple check - in real app, would need proper code validation
+        const expectedCode = q.answer.toLowerCase().replace(/\s+/g, '');
+        const userCode = code.toLowerCase().replace(/\s+/g, '');
+        if (userCode.includes(expectedCode) || expectedCode.includes(userCode)) {
+          correct++;
+        } else {
+          wrong++;
+        }
       }
     }
   });
   
-  showQuizResults(correct, wrong, skipped, quiz.length);
-}
-
-function showQuizResults(correct, wrong, skipped, total) {
   const percentage = Math.round((correct / total) * 100);
   const passed = percentage >= 60;
   
-  const quizContent = $('#quizContent');
-  const resultsDiv = $('#quizResults');
-  
-  // Hide questions
-  if (quizContent) quizContent.classList.add('hidden');
-  
   // Show results
+  const resultsDiv = $('#quizResults');
   resultsDiv.innerHTML = `
     <h3>${passed ? '🎉 Congratulations!' : '📚 Keep Learning!'}</h3>
     <div class="stat-grid" style="margin-top: 20px;">
@@ -640,26 +559,8 @@ function showQuizResults(correct, wrong, skipped, total) {
         ${passed ? 'You passed! Module completed.' : 'Score at least 60% to pass.'}
       </div>
     </div>
-    <div style="margin-top: 24px; text-align: center;">
-      <button class="btn primary" id="closeQuizBtn">Close</button>
-      ${!passed ? '<button class="btn secondary" id="retryQuizBtn" style="margin-left: 12px;">Try Again</button>' : ''}
-    </div>
   `;
   resultsDiv.classList.remove('hidden');
-  
-  // Attach close button
-  $('#closeQuizBtn')?.addEventListener('click', () => {
-    closeModal('quizModal');
-    if (quizContent) quizContent.classList.remove('hidden');
-  });
-  
-  // Attach retry button
-  $('#retryQuizBtn')?.addEventListener('click', () => {
-    currentQuestionIndex = 0;
-    quizAnswers = new Array(total).fill(null);
-    if (quizContent) quizContent.classList.remove('hidden');
-    renderCurrentQuestion();
-  });
   
   // Update progress if passed
   if (passed) {
@@ -894,22 +795,8 @@ function switchView(viewName) {
 function openModal(modalType) {
   if (modalType === 'signIn') {
     $('#signInModal')?.classList.remove('hidden');
-    // Attach event listener after modal is visible
-    setTimeout(() => {
-      const form = $('#signInForm');
-      if (form) {
-        form.onsubmit = handleSignIn;
-      }
-    }, 0);
   } else if (modalType === 'createAccount') {
     $('#createAccountModal')?.classList.remove('hidden');
-    // Attach event listener after modal is visible
-    setTimeout(() => {
-      const form = $('#createAccountForm');
-      if (form) {
-        form.onsubmit = handleCreateAccount;
-      }
-    }, 0);
   } else if (modalType === 'quiz') {
     $('#quizModal')?.classList.remove('hidden');
   }

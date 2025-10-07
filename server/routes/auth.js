@@ -78,6 +78,40 @@ router.post('/set-password', async (req, res) => {
   res.json({ ok: true, user: safe });
 });
 
+router.post('/register', async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+  
+  if (!email || !password || !firstName || !lastName) {
+    return res.status(400).json({ error: 'All fields required' });
+  }
+  
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+  }
+  
+  if (usersStore.has(email)) {
+    return res.status(400).json({ error: 'Email already registered' });
+  }
+  
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = {
+    id: uuidv4(),
+    email,
+    passwordHash,
+    firstName,
+    lastName,
+    name: `${firstName} ${lastName}`,
+    photoUrl: '',
+    progress: {}
+  };
+  
+  usersStore.set(email, user);
+  req.session.userEmail = email;
+  
+  const { id, passwordHash: _, ...safe } = user;
+  res.json({ ok: true, user: safe });
+});
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = usersStore.get(email);

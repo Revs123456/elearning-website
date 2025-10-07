@@ -23,6 +23,26 @@ router.post('/update', requireAuth, (req, res) => {
   res.json({ ok: true, progress: user.progress });
 });
 
+router.post('/complete', requireAuth, (req, res) => {
+  const email = req.session.userEmail;
+  const { courseId, moduleId } = req.body;
+  if (!courseId || !moduleId) return res.status(400).json({ error: 'courseId and moduleId required' });
+  
+  const user = usersStore.get(email);
+  user.progress ||= {};
+  user.progress[courseId] ||= { completedModules: [] };
+  
+  if (!Array.isArray(user.progress[courseId].completedModules)) {
+    user.progress[courseId].completedModules = [];
+  }
+  
+  if (!user.progress[courseId].completedModules.includes(moduleId)) {
+    user.progress[courseId].completedModules.push(moduleId);
+  }
+  
+  res.json({ ok: true, progress: user.progress });
+});
+
 router.post('/certificate/issue', requireAuth, (req, res) => {
   const email = req.session.userEmail;
   const { courseId } = req.body;

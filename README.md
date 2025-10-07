@@ -1,21 +1,17 @@
-# Thinkers E‑Learning Platform
+# Frustrated Thinkers - Learning Platform
 
-A modern e‑learning web app with animated hero, 6-course grid, email OTP sign-in, modules + quizzes, progress dashboard, and auto-generated certificates.
+A comprehensive e-learning platform focused on SQL and JavaScript education. Features include authentication, progress tracking, interactive quizzes, and sequential module unlocking.
 
 ## Features
-- Animated hero: "Hello, Welcome Thinkers!"
-- 6 course cards in a responsive grid
-- Vibrant gradient background, smooth scrolling, micro-interactions
-- Email OTP authentication (Nodemailer via SMTP)
-- Modules per course with end-of-module quiz
-- Progress dashboard and per-course tracking
-- Auto-generated digital certificate (Canvas) after completing all modules & quizzes
-- Responsive design (mobile + desktop)
-
-Optional (included as stubs):
-- Progress bars per course
-- Profile section (photo, name, certificates)
-- AI-based module suggestions (simple heuristic stub)
+- **Scrolling Header**: "Frustrated Thinkers" brand with smooth animation
+- **Two Core Courses**: SQL and JavaScript (30 modules each)
+- **Authentication System**: Sign in and create account functionality
+- **Interactive Quizzes**: MCQ, coding challenges, and fill-in-the-blank questions
+- **Progress Tracking**: Dashboard showing completion statistics
+- **Sequential Learning**: Modules unlock only after completing previous ones
+- **Responsive Design**: Works on mobile and desktop
+- **Modern UI**: Attractive gradients, animations, and smooth interactions
+- **Social Integration**: Instagram link in footer (@techchamps_by.rev)
 
 ## Stack
 - Frontend: HTML/CSS/JS (vanilla), Canvas for certificate
