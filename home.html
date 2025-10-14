@@ -1,0 +1,255 @@
+<div id="home-content">
+                <div class="welcome-banner">
+                    <h1>Welcome Back, <span id="greeting-name">User</span>!</h1>
+                    <p>Here's what's happening with your learning journey today.</p>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Courses in Progress</h3>
+                        <div class="stat-number">3</div>
+                        <p>Continue your learning</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Completed Courses</h3>
+                        <div class="stat-number">5</div>
+                        <p>Great job!</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Learning Streak</h3>
+                        <div class="stat-number">7 <small>days</small></div>
+                        <p>Keep it up!</p>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="btn-action">
+                        <i class="fas fa-book"></i>
+                        <h3>Continue Learning</h3>
+                        <p>Pick up where you left off</p>
+                    </div>
+                    <div class="btn-action">
+                        <i class="fas fa-search"></i>
+                        <h3>Find New Courses</h3>
+                        <p>Explore our catalog</p>
+                    </div>
+                    <div class="btn-action">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Your Achievements</h3>
+                        <p>View your progress</p>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <ul class="activity-list">
+                        <li>
+                            <i class="fas fa-check-circle text-success"></i>
+                            <div>
+                                <h4>Completed "Introduction to Web Development"</h4>
+                                <p>2 hours ago</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-book-open text-info"></i>
+                            <div>
+                                <h4>Started new course: "Advanced JavaScript"</h4>
+                                <p>1 day ago</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-trophy text-warning"></i>
+                            <div>
+                                <h4>Earned "Fast Learner" badge</h4>
+                                <p>3 days ago</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+<style>
+    .welcome-banner {
+        background: linear-gradient(135deg, #49bbbd, #2c3e50);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .welcome-banner h1 {
+        margin: 0 0 1rem 0;
+        font-size: 2rem;
+    }
+
+    .welcome-banner p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #49bbbd;
+        margin: 0.5rem 0;
+    }
+
+    .stat-card h3 {
+        margin: 0 0 0.5rem 0;
+        color: #343a40;
+        font-size: 1.1rem;
+    }
+
+    .stat-card p {
+        margin: 0.5rem 0 0 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .btn-action {
+        background: white;
+        border: 1px solid #e0e0e0;
+        padding: 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: left;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-color: #49bbbd;
+    }
+
+    .btn-action i {
+        font-size: 1.5rem;
+        color: #49bbbd;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .btn-action h3 {
+        margin: 0 0 0.5rem 0;
+        color: #343a40;
+        font-size: 1.1rem;
+    }
+
+    .btn-action p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .recent-activity {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 2rem 0;
+    }
+
+    .recent-activity h2 {
+        margin: 0 0 1.5rem 0;
+        color: #343a40;
+        font-size: 1.5rem;
+    }
+
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .activity-list li {
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .activity-list li:last-child {
+        border-bottom: none;
+    }
+
+    .activity-list i {
+        font-size: 1.25rem;
+        margin-right: 1rem;
+        margin-top: 0.25rem;
+    }
+
+    .activity-list h4 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1rem;
+        color: #343a40;
+    }
+
+    .activity-list p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .text-success { color: #28a745; }
+    .text-info { color: #17a2b8; }
+    .text-warning { color: #ffc107; }
+
+    @media (max-width: 768px) {
+        .welcome-banner {
+            padding: 2rem 1rem;
+        }
+        
+        .welcome-banner h1 {
+            font-size: 1.5rem;
+        }
+        
+        .stats-container,
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+        
+        .recent-activity {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Update username when content loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const username = localStorage.getItem('username') || 'User';
+        const greetingName = document.getElementById('greeting-name');
+        if (greetingName) {
+            greetingName.textContent = username;
+        }
+        });
+    </script>

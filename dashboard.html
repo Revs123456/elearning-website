@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - E-Learning Platform</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #49bbbd;
+        --primary-light: #eef1ff;
+        --secondary: #6c757d;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --white: #ffffff;
+        --border-radius: 8px;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f5f7fb;
+        color: #333;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        width: 250px;
+        background: var(--white);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+        position: fixed;
+        height: 100%;
+        z-index: 100;
+        transition: var(--transition);
+      }
+
+      .logo {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .logo h2 {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .sidebar-nav {
+        padding: 1rem 0;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1.5rem;
+        color: var(--secondary);
+        font-weight: 500;
+        transition: var(--transition);
+        margin: 0.25rem 0.5rem;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .nav-item i {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .nav-item:hover {
+        background-color: var(--primary-light);
+        color: var(--primary);
+      }
+
+      .nav-item.active {
+        background-color: var(--primary);
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
+      }
+
+      .nav-item.active i {
+        color: white !important;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 1.5rem;
+        margin-left: 250px; /* Same as sidebar width */
+      }
+
+      /* Header */
+      .main-header {
+        background: var(--white);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        padding: 0 2rem;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .page-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--dark);
+      }
+
+      /* User Menu */
+      .user-menu {
+        position: relative;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid var(--primary);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .user-avatar:hover {
+        transform: scale(1.05);
+      }
+
+      .user-avatar span {
+        display: inline-block;
+        font-size: 0.95rem;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 120%;
+        background: var(--white);
+        min-width: 250px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        z-index: 100;
+        overflow: hidden;
+        animation: fadeIn 0.2s ease-out;
+      }
+
+      .user-menu:hover .dropdown-content {
+        display: block;
+      }
+
+      .dropdown-content a {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1.25rem;
+        color: var(--dark);
+        transition: var(--transition);
+        font-size: 0.95rem;
+      }
+
+      .dropdown-content a i {
+        margin-right: 0.75rem;
+        color: var(--secondary);
+        width: 20px;
+        text-align: center;
+      }
+
+      .dropdown-content a:hover {
+        background-color: var(--light);
+        color: var(--primary);
+      }
+
+      .user-info {
+        padding: 1.25rem 1.25rem 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .username {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 1rem;
+      }
+
+      .user-email {
+        font-size: 0.85rem;
+        color: var(--secondary);
+      }
+
+      /* Content Area */
+      .content-area {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        min-height: calc(100vh - 70px);
+        background-color: #f9fafd;
+      }
+
+      /* Loading and Error States */
+      .loading {
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 1rem;
+        border: 4px solid var(--primary-light);
+        border-top: 4px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .error-message {
+        color: #dc3545;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      /* Buttons (match index.html theme) */
+      .btn-primary {
+        background: #49bbbd;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary:hover {
+        background: #3aa8aa;
+        transform: translateY(-1px);
+      }
+
+      /* Animations */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 992px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+          transform: translateX(0);
+        }
+
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+        }
+
+        .menu-toggle {
+          display: block;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .content-area {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="logo">
+          <h2>E-Learn</h2>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item" data-page="home">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+          </a>
+          <a href="#" class="nav-item" data-page="courses">
+            <i class="fas fa-book"></i>
+            <span>Courses</span>
+          </a>
+          <a href="#" class="nav-item" data-page="bookmarks">
+            <i class="fas fa-bookmark"></i>
+            <span>Bookmarks</span>
+          </a>
+          <a href="#" class="nav-item" data-page="playlists">
+            <i class="fas fa-music"></i>
+            <span>Playlists</span>
+          </a>
+          <a href="#" class="nav-item" data-page="shorts">
+            <i class="fas fa-play-circle"></i>
+            <span>Shorts</span>
+          </a>
+          <a href="#" class="nav-item" data-page="websites">
+            <i class="fas fa-globe"></i>
+            <span>Websites</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="main-header">
+          <div class="header-content">
+            <h1 class="page-title">Dashboard</h1>
+            <div class="user-menu">
+              <div class="user-avatar" id="userAvatar">
+                <span id="userInitials">U</span>
+              </div>
+              <div class="dropdown-content" id="userDropdown">
+                <div class="user-info">
+                  <span class="username" id="dropdownUsername">User</span>
+                </div>
+                <a href="#"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" id="logoutBtn"
+                  ><i class="fas fa-sign-out-alt"></i> Logout</a
+                >
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content Area -->
+        <div id="content-area" class="content-area">
+          <!-- Iframe-based dynamic content loader (works with file://) -->
+          <div class="loading" id="frame-loading" style="display: none">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+          </div>
+          <iframe
+            id="content-frame"
+            title="Content"
+            style="
+              width: 100%;
+              height: calc(100vh - 150px);
+              border: 0;
+              background: #fff;
+            "
+          ></iframe>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Check if user is logged in
+      document.addEventListener("DOMContentLoaded", function () {
+        // DOM Elements
+        const contentArea = document.getElementById("content-area");
+        const navItems = document.querySelectorAll(".nav-item");
+        const userAvatar = document.getElementById("userAvatar");
+        const userDropdown = document.getElementById("userDropdown");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const pageTitle = document.querySelector(".page-title");
+
+        // Check if user is logged in
+
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (!isLoggedIn) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Set username in dropdown
+        const username = localStorage.getItem("username") || "User";
+        const dropdownUsername = document.getElementById("dropdownUsername");
+        const userInitials = document.getElementById("userInitials");
+        if (dropdownUsername) dropdownUsername.textContent = username;
+        if (userInitials)
+          userInitials.textContent = username.trim().charAt(0).toUpperCase();
+
+        userAvatar.addEventListener("click", function (e) {
+          e.stopPropagation();
+          userDropdown.style.display =
+            userDropdown.style.display === "block" ? "none" : "block";
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function () {
+          userDropdown.style.display = "none";
+        });
+
+        // Handle logout
+        logoutBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          localStorage.removeItem("isLoggedIn");
+          localStorage.removeItem("username");
+          window.location.href = "index.html";
+        });
+
+        // Iframe-based content load (works with file://)
+        function setActiveNav(page) {
+          navItems.forEach((item) => item.classList.remove("active"));
+          const selected = document.querySelector(
+            `.nav-item[data-page="${page}"]`
+          );
+          if (selected) selected.classList.add("active");
+        }
+
+        function loadContent(page) {
+          const frame = document.getElementById("content-frame");
+          const loader = document.getElementById("frame-loading");
+
+          // Update active nav item
+          setActiveNav(page);
+
+          // Update titles and URL hash
+          pageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1);
+          document.title = `${pageTitle.textContent} - E-Learning Platform`;
+          window.location.hash = page;
+
+          // Show loader and set iframe src
+          loader.style.display = "block";
+          frame.style.visibility = "hidden";
+          frame.src = `${page}.html`;
+        }
+
+        // Hide loader when iframe loads
+        const frame = document.getElementById("content-frame");
+        const loader = document.getElementById("frame-loading");
+        frame.addEventListener("load", function () {
+          loader.style.display = "none";
+          frame.style.visibility = "visible";
+          try {
+            // Try to read first heading to reflect in header
+            const doc = frame.contentDocument || frame.contentWindow.document;
+            const h = doc.querySelector("h1, h2, h3");
+            if (h) pageTitle.textContent = h.textContent.trim();
+          } catch (e) {
+            // Ignore cross-origin errors (shouldn't happen for local files)
+          }
+        });
+
+        // Navigation click handlers (delegated to handle clicks reliably)
+        const sidebarNav = document.querySelector(".sidebar-nav");
+        sidebarNav.addEventListener("click", function (e) {
+          const link = e.target.closest(".nav-item");
+          if (!link) return;
+          e.preventDefault();
+          e.stopPropagation();
+          const page = link.getAttribute("data-page");
+          if (!page) return;
+
+          // Remove active class from all nav items
+          document.querySelectorAll(".nav-item").forEach((item) => {
+            item.classList.remove("active");
+          });
+
+          // Add active class to clicked item
+          link.classList.add("active");
+
+          // Load the content
+          loadContent(page);
+        });
+
+        // Handle hash changes (e.g., manual changes or external links)
+        window.addEventListener("hashchange", function () {
+          const page = window.location.hash.substring(1) || "home";
+          setActiveNav(page);
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener("popstate", function (event) {
+          const page = event.state ? event.state.page : "home";
+          loadContent(page);
+        });
+
+        // Load initial content based on URL hash or default to home
+        const initialPage = window.location.hash.substring(1) || "home";
+        // Set initial active state
+        setActiveNav(initialPage);
+        loadContent(initialPage);
+      });
+    </script>
+  </body>
+</html>
