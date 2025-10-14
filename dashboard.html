@@ -38,6 +38,20 @@
         line-height: 1.6;
         overflow-x: hidden;
       }
+      /* --- Active Nav Fix --- */
+      .sidebar .nav-item.active,
+      .sidebar .nav-item.active:link,
+      .sidebar .nav-item.active:visited,
+      .sidebar .nav-item.active:hover,
+      .sidebar .nav-item.active:focus {
+        background-color: var(--primary) !important;
+        color: #fff !important;
+      }
+
+      .sidebar .nav-item.active i,
+      .sidebar .nav-item.active span {
+        color: #fff !important;
+      }
 
       .dashboard-container {
         display: flex;
@@ -276,6 +290,25 @@
         background: #3aa8aa;
         transform: translateY(-1px);
       }
+      /* --- FINAL Active Nav Fix (place at bottom of <style>) --- */
+      .sidebar .nav-item.active,
+      .sidebar .nav-item.active:link,
+      .sidebar .nav-item.active:visited,
+      .sidebar .nav-item.active:hover,
+      .sidebar .nav-item.active:focus {
+        background-color: var(--primary) !important;
+        color: #fff !important;
+      }
+
+      .sidebar .nav-item.active i,
+      .sidebar .nav-item.active span {
+        color: #fff !important;
+      }
+
+      /* If any nested element forces its own color, inherit from the link */
+      .sidebar .nav-item.active * {
+        color: inherit !important;
+      }
 
       /* Animations */
       @keyframes spin {
@@ -405,52 +438,48 @@
     </div>
 
     <script>
-      // Check if user is logged in
       document.addEventListener("DOMContentLoaded", function () {
-        // DOM Elements
-        const contentArea = document.getElementById("content-area");
+        // ---- DOM ----
         const navItems = document.querySelectorAll(".nav-item");
         const userAvatar = document.getElementById("userAvatar");
         const userDropdown = document.getElementById("userDropdown");
         const logoutBtn = document.getElementById("logoutBtn");
         const pageTitle = document.querySelector(".page-title");
+        const frame = document.getElementById("content-frame");
+        const loader = document.getElementById("frame-loading");
+        const sidebarNav = document.querySelector(".sidebar-nav");
 
-        // Check if user is logged in
-
+        // ---- Auth guard ----
         const isLoggedIn = localStorage.getItem("isLoggedIn");
         if (!isLoggedIn) {
           window.location.href = "index.html";
           return;
         }
 
-        // Set username in dropdown
-        const username = localStorage.getItem("username") || "User";
+        // ---- User UI ----
+        const username = (localStorage.getItem("username") || "User").trim();
         const dropdownUsername = document.getElementById("dropdownUsername");
         const userInitials = document.getElementById("userInitials");
         if (dropdownUsername) dropdownUsername.textContent = username;
         if (userInitials)
-          userInitials.textContent = username.trim().charAt(0).toUpperCase();
+          userInitials.textContent = (username[0] || "U").toUpperCase();
 
-        userAvatar.addEventListener("click", function (e) {
+        userAvatar?.addEventListener("click", function (e) {
           e.stopPropagation();
           userDropdown.style.display =
             userDropdown.style.display === "block" ? "none" : "block";
         });
-
-        // Close dropdown when clicking outside
         document.addEventListener("click", function () {
           userDropdown.style.display = "none";
         });
-
-        // Handle logout
-        logoutBtn.addEventListener("click", function (e) {
+        logoutBtn?.addEventListener("click", function (e) {
           e.preventDefault();
           localStorage.removeItem("isLoggedIn");
           localStorage.removeItem("username");
           window.location.href = "index.html";
         });
 
-        // Iframe-based content load (works with file://)
+        // ---- Nav helpers ----
         function setActiveNav(page) {
           navItems.forEach((item) => item.classList.remove("active"));
           const selected = document.querySelector(
@@ -459,43 +488,47 @@
           if (selected) selected.classList.add("active");
         }
 
-        function loadContent(page) {
-          const frame = document.getElementById("content-frame");
-          const loader = document.getElementById("frame-loading");
+        // Prevent infinite hash loops by allowing the caller to opt out of hash update
+        function loadContent(page, { updateHash = true } = {}) {
+          // Validate: if no corresponding nav item, default to home
+          if (!document.querySelector(`.nav-item[data-page="${page}"]`)) {
+            page = "home";
+          }
 
-          // Update active nav item
           setActiveNav(page);
-
-          // Update titles and URL hash
           pageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1);
           document.title = `${pageTitle.textContent} - E-Learning Platform`;
-          window.location.hash = page;
 
-          // Show loader and set iframe src
-          loader.style.display = "block";
-          frame.style.visibility = "hidden";
-          frame.src = `${page}.html`;
+          if (updateHash) {
+            // Only set if different, to avoid unnecessary hashchange
+            if (window.location.hash.substring(1) !== page) {
+              window.location.hash = page;
+            }
+          }
+
+          // Show loader & load iframe
+          if (loader) loader.style.display = "block";
+          if (frame) {
+            frame.style.visibility = "hidden";
+            frame.src = `${page}.html`;
+          }
         }
 
-        // Hide loader when iframe loads
-        const frame = document.getElementById("content-frame");
-        const loader = document.getElementById("frame-loading");
-        frame.addEventListener("load", function () {
-          loader.style.display = "none";
+        // When iframe finishes loading, hide loader and optionally sync title
+        frame?.addEventListener("load", function () {
+          if (loader) loader.style.display = "none";
           frame.style.visibility = "visible";
           try {
-            // Try to read first heading to reflect in header
-            const doc = frame.contentDocument || frame.contentWindow.document;
-            const h = doc.querySelector("h1, h2, h3");
+            const doc = frame.contentDocument || frame.contentWindow?.document;
+            const h = doc?.querySelector("h1, h2, h3");
             if (h) pageTitle.textContent = h.textContent.trim();
-          } catch (e) {
-            // Ignore cross-origin errors (shouldn't happen for local files)
+          } catch {
+            // If any cross-origin error (unlikely for local files), ignore.
           }
         });
 
-        // Navigation click handlers (delegated to handle clicks reliably)
-        const sidebarNav = document.querySelector(".sidebar-nav");
-        sidebarNav.addEventListener("click", function (e) {
+        // ---- Sidebar clicks (delegated) ----
+        sidebarNav?.addEventListener("click", function (e) {
           const link = e.target.closest(".nav-item");
           if (!link) return;
           e.preventDefault();
@@ -503,35 +536,29 @@
           const page = link.getAttribute("data-page");
           if (!page) return;
 
-          // Remove active class from all nav items
-          document.querySelectorAll(".nav-item").forEach((item) => {
-            item.classList.remove("active");
-          });
-
-          // Add active class to clicked item
+          // NEW: set the active class immediately
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((i) => i.classList.remove("active"));
           link.classList.add("active");
 
-          // Load the content
-          loadContent(page);
+          loadContent(page); // will also set hash
         });
 
-        // Handle hash changes (e.g., manual changes or external links)
+        // ---- Hash routing fixes ----
+        // On hashchange (user types URL, or back/forward), actually load the content.
         window.addEventListener("hashchange", function () {
           const page = window.location.hash.substring(1) || "home";
-          setActiveNav(page);
+          // Don't re-set the hash from inside this handler -> updateHash:false
+          loadContent(page, { updateHash: false });
         });
 
-        // Handle browser back/forward buttons
-        window.addEventListener("popstate", function (event) {
-          const page = event.state ? event.state.page : "home";
-          loadContent(page);
-        });
+        // You’re not using pushState, so popstate is unnecessary—removed.
 
-        // Load initial content based on URL hash or default to home
+        // ---- Initial boot ----
         const initialPage = window.location.hash.substring(1) || "home";
-        // Set initial active state
         setActiveNav(initialPage);
-        loadContent(initialPage);
+        loadContent(initialPage, { updateHash: true });
       });
     </script>
   </body>
