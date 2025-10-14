@@ -1,14 +1,22 @@
 // Admin Panel JavaScript - Fixed Version
-document.addEventListener('DOMContentLoaded', function() {
-    // Load shared.js first
-    const script = document.createElement('script');
-    script.src = 'js/shared.js';
-    script.onload = function() {
-        // Initialize the admin panel after shared.js is loaded
+console.log('Admin script loaded');
+
+function initializeAdmin() {
+    console.log('Initializing admin panel...');
+    try {
         initAdminPanel();
-    };
-    document.head.appendChild(script);
-});
+    } catch (error) {
+        console.error('Error in admin initialization:', error);
+    }
+}
+
+// Check if DOM is already loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAdmin);
+} else {
+    // DOM already loaded
+    initializeAdmin();
+}
 
 // Main function to initialize the admin panel
 function initAdminPanel() {
@@ -36,37 +44,64 @@ function initAdminPanel() {
 
 // Initialize sidebar navigation
 function initSidebar() {
-    const menuItems = document.querySelectorAll('.menu-item');
+    console.log('Initializing sidebar...');
+    const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
     
+    if (menuItems.length === 0) {
+        console.error('No menu items found!');
+        return;
+    }
+    
+    // First, hide all content sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Add click handler to each menu item
     menuItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Remove active class from all menu items
-            menuItems.forEach(i => i.classList.remove('active'));
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.getAttribute('data-section');
+            console.log('Menu item clicked:', section);
             
-            // Add active class to clicked menu item
+            // Update active state
+            menuItems.forEach(i => i.classList.remove('active'));
             this.classList.add('active');
             
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            
             // Show the selected section
-            const sectionId = this.getAttribute('data-section') + '-section';
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.style.display = 'block';
-            }
-            
-            // Load section-specific data
-            loadSectionData(this.getAttribute('data-section'));
+            showSection(section);
         });
     });
     
     // Show dashboard by default
     const dashboardItem = document.querySelector('.menu-item[data-section="dashboard"]');
     if (dashboardItem) {
-        dashboardItem.click();
+        console.log('Activating dashboard by default');
+        dashboardItem.classList.add('active');
+        showSection('dashboard');
+    } else {
+        console.error('Dashboard menu item not found!');
+    }
+}
+
+// Show a specific section
+function showSection(sectionName) {
+    // Hide all sections first
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show the selected section
+    const sectionId = sectionName + '-section';
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'block';
+        console.log('Showing section:', sectionId);
+        // Load section data
+        loadSectionData(sectionName);
+    } else {
+        console.error('Section not found:', sectionId);
     }
 }
 
@@ -308,7 +343,7 @@ function saveItem(section) {
 
 // Load section data
 function loadSectionData(section) {
-        const storageKey = section.endsWith('s') ? section : section + 's';
+    const storageKey = section.endsWith('s') ? section : section + 's';
     const items = JSON.parse(localStorage.getItem(storageKey) || '[]');
     
     // Update the UI with the loaded data
@@ -316,8 +351,14 @@ function loadSectionData(section) {
     if (sectionElement) {
         // Here you would update the UI with the loaded items
         console.log(`Loaded ${items.length} items for ${section}`);
-
+    }
 }
+
+// Initialize the admin panel
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded, initializing admin panel...');
+    initializeAdmin();
+});
 
 // Load dashboard data
 function loadDashboardData() {
