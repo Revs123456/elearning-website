@@ -2,31 +2,23 @@
   <div class="playlists-container">
     <div class="playlists-header">
       <h2>My Playlists</h2>
-      <div class="playlist-actions">
-        <a href="admin.html#playlists-section" class="btn-primary"> </a>
-      </div>
     </div>
 
-    <!-- Loading State -->
+    <!-- Loading -->
     <div id="loading-state" class="loading-state">
       <div class="spinner"></div>
       <p>Loading playlists...</p>
     </div>
 
-    <!-- Empty State -->
+    <!-- Empty -->
     <div id="empty-state" class="empty-state" style="display: none">
       <i class="fas fa-music"></i>
       <h3>No Playlists Found</h3>
-      <p>Get started by creating your first playlist</p>
-      <a href="admin.html#playlists-section" class="btn-primary">
-        <i class="fas fa-plus"></i> Create Playlist
-      </a>
+      <p>Currently there are no playlists to display.</p>
     </div>
 
-    <!-- Playlists Grid -->
-    <div id="playlists-grid" class="playlists-grid">
-      <!-- Playlists will be loaded here by JavaScript -->
-    </div>
+    <!-- Grid -->
+    <div id="playlists-grid" class="playlists-grid"></div>
   </div>
 </div>
 
@@ -36,7 +28,6 @@
     margin: 0 auto;
     padding: 0 1rem;
   }
-
   .playlists-header {
     display: flex;
     justify-content: space-between;
@@ -45,29 +36,6 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
-
-  .playlist-actions {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .btn-primary {
-    background: #49bbbd;
-    color: white;
-    border: none;
-    padding: 0.5rem 1.25rem;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background 0.3s ease;
-  }
-
-  .btn-primary:hover {
-    background: #3aa8aa;
-  }
-
   .playlists-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -76,132 +44,83 @@
   }
 
   .playlist-card {
-    background: white;
+    background: #fff;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
     display: flex;
     flex-direction: column;
   }
-
   .playlist-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
-
   .playlist-cover {
-    height: 180px;
     position: relative;
+    padding-top: 56.25%;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 3rem;
   }
-
   .playlist-cover img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+    opacity: 0.7;
+    transition: opacity 0.3s;
   }
-
+  .playlist-card:hover .playlist-cover img {
+    opacity: 0.9;
+  }
   .playlist-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 2;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s;
   }
-
   .playlist-card:hover .playlist-overlay {
     opacity: 1;
   }
-
   .play-button {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.9);
-    color: #49bbbd;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #49bbbd;
     font-size: 1.25rem;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s, background 0.3s;
   }
-
   .play-button:hover {
     transform: scale(1.1);
+    background: #fff;
   }
-
   .playlist-info {
     padding: 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
   }
-
   .playlist-title {
     margin: 0 0 0.5rem 0;
     font-size: 1.1rem;
     color: #2c3e50;
   }
-
-  .playlist-meta {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-
   .playlist-description {
     color: #666;
     font-size: 0.9rem;
-    margin: 0 0 1rem 0;
-    flex: 1;
+    margin: 0 0 0.75rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-
-  .playlist-stats {
-    display: flex;
-    justify-content: space-between;
-    color: #888;
-    font-size: 0.85rem;
-    margin-top: auto;
-  }
-
-  .stat {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #666;
-    grid-column: 1 / -1;
-  }
-
-  .empty-state i {
-    font-size: 3rem;
-    color: #ddd;
-    margin-bottom: 1rem;
-    display: block;
-  }
-
   .tag {
     display: inline-block;
     background: #e9f9f9;
@@ -213,158 +132,6 @@
     margin-bottom: 0.5rem;
   }
 
-  .playlist-tags {
-    margin: 0.5rem 0;
-  }
-</style>
-<script>
-  // --- Storage Bridge: read arrays saved by admin or legacy keys ---
-  function getAdminState() {
-    try {
-      return JSON.parse(localStorage.getItem("elearn_admin_state_v1") || "{}");
-    } catch {
-      return {};
-    }
-  }
-
-  function getItems(key) {
-    const s = getAdminState();
-    if (Array.isArray(s[key]) && s[key].length) return s[key]; // admin state wins when present
-    try {
-      return JSON.parse(localStorage.getItem(key) || "[]");
-    } catch {
-      // legacy fallback
-      return [];
-    }
-  }
-
-  // (Optional) keep old pages working that read legacy keys elsewhere:
-  function mirrorLegacy(key) {
-    const arr = getItems(key);
-    try {
-      localStorage.setItem(key, JSON.stringify(arr));
-    } catch {}
-  }
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const playlistsGrid = document.getElementById("playlists-grid");
-    const loadingState = document.getElementById("loading-state");
-    const emptyState = document.getElementById("empty-state");
-
-    // Gradient colors for playlist covers
-    const gradients = [
-      "linear-gradient(135deg, #49bbbd, #2c3e50)",
-      "linear-gradient(135deg, #E91E63, #9C27B0)",
-      "linear-gradient(135deg, #FF9800, #F44336)",
-      "linear-gradient(135deg, #4CAF50, #2196F3)",
-      "linear-gradient(135deg, #9C27B0, #3F51B5)",
-    ];
-
-    // Load playlists from localStorage
-    function loadPlaylists() {
-      loadingState.style.display = "flex";
-      emptyState.style.display = "none";
-      playlistsGrid.innerHTML = "";
-
-      // Simulate loading
-      setTimeout(() => {
-        try {
-          const playlists = JSON.parse(
-            localStorage.getItem("playlists") || "[]"
-          );
-
-          if (playlists.length === 0) {
-            showEmptyState();
-          } else {
-            displayPlaylists(playlists);
-            emptyState.style.display = "none";
-          }
-        } catch (error) {
-          console.error("Error loading playlists:", error);
-          showEmptyState("Error loading playlists");
-        } finally {
-          loadingState.style.display = "none";
-        }
-      }, 500);
-    }
-
-    // Display playlists in the grid
-    function displayPlaylists(playlists) {
-      playlistsGrid.innerHTML = "";
-
-      playlists.forEach((playlist, index) => {
-        const gradient = gradients[index % gradients.length];
-        const playlistCard = createPlaylistCard(playlist, gradient);
-        playlistsGrid.appendChild(playlistCard);
-      });
-
-      // Add event listeners to play buttons
-      document.querySelectorAll(".play-button").forEach((button) => {
-        button.addEventListener("click", function (e) {
-          e.stopPropagation();
-          const playlistCard = this.closest(".playlist-card");
-          const playlistTitle =
-            playlistCard.querySelector(".playlist-title").textContent;
-          console.log(`Playing playlist: ${playlistTitle}`);
-        });
-      });
-    }
-
-    // Create a playlist card element
-    function createPlaylistCard(playlist, gradient) {
-      const card = document.createElement("div");
-      card.className = "playlist-card";
-
-      card.innerHTML = `
-                <div class="playlist-cover" style="background: ${gradient};">
-                    <img src="https://source.unsplash.com/random/600x400?music&${Math.random()}" alt="${
-        playlist.title
-      }">
-                    <div class="playlist-overlay">
-                        <div class="play-button">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="playlist-info">
-                    <h3 class="playlist-title">${
-                      playlist.title || "Untitled Playlist"
-                    }</h3>
-                    ${
-                      playlist.description
-                        ? `<p class="playlist-description">${playlist.description}</p>`
-                        : ""
-                    }
-                    ${
-                      playlist.category
-                        ? `
-                        <div class="playlist-tags">
-                            <span class="tag">${playlist.category}</span>
-                        </div>
-                    `
-                        : ""
-                    }
-                </div>
-            `;
-
-      return card;
-    }
-
-    function showEmptyState(message = "No playlists found") {
-      emptyState.querySelector("h3").textContent = message;
-      emptyState.style.display = "flex";
-      playlistsGrid.style.display = "none";
-    }
-
-    // Initial load
-    loadPlaylists();
-  });
-</script>
-
-<style>
-  /* Loading State */
   .loading-state {
     display: none;
     flex-direction: column;
@@ -373,7 +140,6 @@
     padding: 3rem 0;
     color: #7f8c8d;
   }
-
   .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     width: 36px;
@@ -383,17 +149,14 @@
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
   }
-
   @keyframes spin {
     0% {
-      transform: rotate(0deg);
+      transform: rotate(0);
     }
     100% {
       transform: rotate(360deg);
     }
   }
-
-  /* Empty State */
   .empty-state {
     display: none;
     flex-direction: column;
@@ -405,121 +168,10 @@
     border-radius: 8px;
     margin: 2rem 0;
   }
-
   .empty-state i {
     font-size: 3rem;
     color: #e0e0e0;
     margin-bottom: 1rem;
-  }
-
-  .empty-state h3 {
-    margin: 0 0 0.5rem 0;
-    color: #2c3e50;
-  }
-
-  .empty-state p {
-    color: #7f8c8d;
-    margin-bottom: 1.5rem;
-  }
-
-  /* Update playlist card styles */
-  .playlist-card {
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .playlist-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
-
-  .playlist-cover {
-    position: relative;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
-    overflow: hidden;
-  }
-
-  .playlist-cover img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-  }
-
-  .playlist-card:hover .playlist-cover img {
-    opacity: 0.9;
-  }
-
-  .playlist-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .playlist-card:hover .playlist-overlay {
-    opacity: 1;
-  }
-
-  .play-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #49bbbd;
-    font-size: 1.25rem;
-    cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease;
-  }
-
-  .play-button:hover {
-    transform: scale(1.1);
-    background: white;
-  }
-
-  .playlist-info {
-    padding: 1.25rem;
-  }
-
-  .playlist-title {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-    color: #2c3e50;
-  }
-
-  .playlist-description {
-    color: #666;
-    font-size: 0.9rem;
-    margin: 0 0 0.75rem 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Responsive Grid */
-  .playlists-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
   }
 
   @media (max-width: 768px) {
@@ -527,10 +179,127 @@
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     }
   }
-
   @media (max-width: 480px) {
     .playlists-grid {
       grid-template-columns: 1fr;
     }
   }
 </style>
+
+<script>
+  const ADMIN_KEY = "elearn_admin_state_v1";
+
+  function getAdminState() {
+    try {
+      return JSON.parse(localStorage.getItem(ADMIN_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  }
+  function toArray(x) {
+    if (Array.isArray(x)) return x;
+    if (x && typeof x === "object") return Object.values(x);
+    return [];
+  }
+  function getPlaylistsStrict() {
+    const s = getAdminState();
+    return toArray(s.playlists);
+  }
+  function purgeLegacyIfAdminExists() {
+    if (localStorage.getItem(ADMIN_KEY)) {
+      [
+        "home",
+        "courses",
+        "bookmarks",
+        "playlists",
+        "shorts",
+        "websites",
+      ].forEach((k) => {
+        try {
+          localStorage.removeItem(k);
+        } catch {}
+      });
+    }
+  }
+  function dedupeByIdOrTitle(list) {
+    const seen = new Set();
+    return list.filter((p) => {
+      const key = (p.id || "") + ":" + (p.title || "");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    purgeLegacyIfAdminExists();
+
+    const grid = document.getElementById("playlists-grid");
+    const loading = document.getElementById("loading-state");
+    const empty = document.getElementById("empty-state");
+
+    const gradients = [
+      "linear-gradient(135deg,#49bbbd,#2c3e50)",
+      "linear-gradient(135deg,#E91E63,#9C27B0)",
+      "linear-gradient(135deg,#FF9800,#F44336)",
+      "linear-gradient(135deg,#4CAF50,#2196F3)",
+      "linear-gradient(135deg,#9C27B0,#3F51B5)",
+    ];
+
+    function createCard(p, idx) {
+      const card = document.createElement("div");
+      const gradient = gradients[idx % gradients.length];
+      card.className = "playlist-card";
+      card.innerHTML = `
+        <div class="playlist-cover" style="background:${gradient};">
+          <img src="https://source.unsplash.com/random/600x400?music&${Math.random()}" alt="${
+        p.title || "Playlist"
+      }">
+          <div class="playlist-overlay"><div class="play-button"><i class="fas fa-play"></i></div></div>
+        </div>
+        <div class="playlist-info">
+          <h3 class="playlist-title">${p.title || "Untitled Playlist"}</h3>
+          ${
+            p.description
+              ? `<p class="playlist-description">${p.description}</p>`
+              : ""
+          }
+          ${p.category ? `<span class="tag">${p.category}</span>` : ""}
+        </div>`;
+      card.querySelector(".play-button").addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("Playing:", p.title || "Untitled");
+      });
+      return card;
+    }
+
+    function render(list) {
+      grid.innerHTML = "";
+      if (!list.length) {
+        empty.style.display = "flex";
+        return;
+      }
+      empty.style.display = "none";
+      list.forEach((p, i) => grid.appendChild(createCard(p, i)));
+    }
+
+    function load() {
+      loading.style.display = "flex";
+      empty.style.display = "none";
+      grid.innerHTML = "";
+      let list = getPlaylistsStrict();
+      list = dedupeByIdOrTitle(list);
+      loading.remove();
+      render(list);
+    }
+
+    window.addEventListener("storage", (e) => {
+      if (e.key === ADMIN_KEY) {
+        purgeLegacyIfAdminExists();
+        render(dedupeByIdOrTitle(getPlaylistsStrict()));
+      }
+    });
+
+    load();
+  });
+</script>

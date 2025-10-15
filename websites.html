@@ -3,17 +3,14 @@
     <div class="websites-header">
       <h2>Learning Resources</h2>
       <p>Discover and organize your favorite learning resources</p>
-      <div class="header-actions">
-        <a href="admin.html#websites-section" class="btn-primary"> </a>
-      </div>
     </div>
 
     <div class="search-container">
       <div class="search-box">
         <i class="fas fa-search"></i>
         <input
-          type="text"
           id="search-websites"
+          type="text"
           placeholder="Search websites, tutorials, and more..."
         />
       </div>
@@ -29,26 +26,21 @@
       </div>
     </div>
 
-    <!-- Loading State -->
+    <!-- Loading -->
     <div id="loading-state" class="loading-state">
       <div class="spinner"></div>
       <p>Loading resources...</p>
     </div>
 
-    <!-- Empty State -->
+    <!-- Empty -->
     <div id="empty-state" class="empty-state" style="display: none">
       <i class="fas fa-globe"></i>
       <h3>No Resources Found</h3>
-      <p>Get started by adding your first learning resource</p>
-      <a href="admin.html#websites-section" class="btn-primary">
-        <i class="fas fa-plus"></i> Add Resource
-      </a>
+      <p>Currently there are no resources to display.</p>
     </div>
 
-    <!-- Websites Grid -->
-    <div id="websites-grid" class="websites-grid">
-      <!-- Websites will be loaded here by JavaScript -->
-    </div>
+    <!-- Grid -->
+    <div id="websites-grid" class="websites-grid"></div>
   </div>
 </div>
 
@@ -58,24 +50,20 @@
     margin: 0 auto;
     padding: 0 1rem;
   }
-
   .websites-header {
     margin-bottom: 2rem;
   }
-
   .search-container {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
     flex-wrap: wrap;
   }
-
   .search-box {
     flex: 1;
     min-width: 300px;
     position: relative;
   }
-
   .search-box i {
     position: absolute;
     left: 1rem;
@@ -83,62 +71,49 @@
     transform: translateY(-50%);
     color: #666;
   }
-
   .search-box input {
     width: 100%;
     padding: 0.75rem 1rem 0.75rem 2.5rem;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
   }
-
-  .category-tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
+  .filter-group {
+    min-width: 200px;
   }
-
-  .tab-btn {
-    padding: 0.5rem 1.25rem;
+  .filter-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
     border: 1px solid #ddd;
-    background: white;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237f8c8d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem;
   }
-
-  .tab-btn:hover,
-  .tab-btn.active {
-    background: #49bbbd;
-    color: white;
-    border-color: #49bbbd;
-  }
-
   .websites-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
   }
-
   .website-card {
     display: flex;
     align-items: center;
     padding: 1.25rem;
-    background: white;
+    background: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s, box-shadow 0.3s;
     text-decoration: none;
     color: #333;
   }
-
   .website-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
-
   .website-icon {
     width: 50px;
     height: 50px;
@@ -149,27 +124,22 @@
     margin-right: 1rem;
     flex-shrink: 0;
   }
-
   .website-icon i {
     font-size: 1.5rem;
-    color: white;
+    color: #fff;
   }
-
   .website-info {
     flex: 1;
   }
-
   .website-info h3 {
     margin: 0 0 0.25rem 0;
     font-size: 1.1rem;
   }
-
   .website-info p {
     margin: 0;
     color: #666;
     font-size: 0.9rem;
   }
-
   .website-category {
     display: inline-block;
     background: #e9f9f9;
@@ -179,237 +149,15 @@
     border-radius: 15px;
     margin-top: 0.5rem;
   }
-
-  .website-card .external-link {
+  .external-link {
     color: #999;
     margin-left: 0.5rem;
-    transition: color 0.3s ease;
+    transition: color 0.3s;
   }
-
   .website-card:hover .external-link {
     color: #49bbbd;
   }
 
-  .add-website {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: 100%;
-    color: #49bbbd;
-    border: 2px dashed #ddd;
-    transition: all 0.3s ease;
-  }
-
-  .add-website:hover {
-    border-color: #49bbbd;
-    background: #f8fcfc;
-  }
-
-  .add-website i {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .add-website span {
-    font-weight: 500;
-  }
-</style>
-<script>
-  // --- Storage Bridge: read arrays saved by admin or legacy keys ---
-  function getAdminState() {
-    try {
-      return JSON.parse(localStorage.getItem("elearn_admin_state_v1") || "{}");
-    } catch {
-      return {};
-    }
-  }
-
-  function getItems(key) {
-    const s = getAdminState();
-    if (Array.isArray(s[key]) && s[key].length) return s[key]; // admin state wins when present
-    try {
-      return JSON.parse(localStorage.getItem(key) || "[]");
-    } catch {
-      // legacy fallback
-      return [];
-    }
-  }
-
-  // (Optional) keep old pages working that read legacy keys elsewhere:
-  function mirrorLegacy(key) {
-    const arr = getItems(key);
-    try {
-      localStorage.setItem(key, JSON.stringify(arr));
-    } catch {}
-  }
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const websitesGrid = document.getElementById("websites-grid");
-    const loadingState = document.getElementById("loading-state");
-    const emptyState = document.getElementById("empty-state");
-    const searchInput = document.getElementById("search-websites");
-    const categoryFilter = document.getElementById("category-filter");
-
-    let websites = [];
-
-    // Load websites from localStorage
-    function loadWebsites() {
-      loadingState.style.display = "flex";
-      emptyState.style.display = "none";
-      websitesGrid.innerHTML = "";
-
-      // Simulate loading
-      setTimeout(() => {
-        try {
-          websites = JSON.parse(localStorage.getItem("websites") || "[]");
-          displayWebsites(websites);
-
-          if (websites.length === 0) {
-            showEmptyState();
-          } else {
-            emptyState.style.display = "none";
-          }
-        } catch (error) {
-          console.error("Error loading websites:", error);
-          showEmptyState("Error loading resources. Please try again.");
-        } finally {
-          loadingState.style.display = "none";
-        }
-      }, 500);
-    }
-
-    // Display websites in the grid
-    function displayWebsites(websitesToShow) {
-      websitesGrid.innerHTML = "";
-
-      if (websitesToShow.length === 0) {
-        showEmptyState("No resources match your search");
-        return;
-      }
-
-      websitesToShow.forEach((website) => {
-        const websiteCard = createWebsiteCard(website);
-        websitesGrid.appendChild(websiteCard);
-      });
-    }
-
-    // Create a website card element
-    function createWebsiteCard(website) {
-      const favicon = getFavicon(website.url);
-      const hostname = website.url
-        ? new URL(website.url).hostname.replace("www.", "")
-        : "";
-
-      const card = document.createElement("a");
-      card.href = website.url || "#";
-      card.className = "website-card";
-      card.target = "_blank";
-      card.rel = "noopener noreferrer";
-
-      card.innerHTML = `
-                <div class="website-icon" style="background: ${getRandomColor()}">
-                    <i class="${favicon}"></i>
-                </div>
-                <div class="website-info">
-                    <h3>${website.name || hostname}</h3>
-                    <p>${website.description || "No description available"}</p>
-                    ${
-                      website.category
-                        ? `<span class="website-category">${formatCategory(
-                            website.category
-                          )}</span>`
-                        : ""
-                    }
-                </div>
-                <i class="fas fa-external-link-alt external-link"></i>
-            `;
-
-      return card;
-    }
-
-    // Filter websites based on search and category
-    function filterWebsites() {
-      const searchTerm = searchInput.value.toLowerCase();
-      const selectedCategory = categoryFilter.value;
-
-      const filtered = websites.filter((website) => {
-        const matchesSearch =
-          !searchTerm ||
-          (website.name && website.name.toLowerCase().includes(searchTerm)) ||
-          (website.description &&
-            website.description.toLowerCase().includes(searchTerm)) ||
-          (website.url && website.url.toLowerCase().includes(searchTerm));
-
-        const matchesCategory =
-          !selectedCategory ||
-          (website.category && website.category === selectedCategory);
-
-        return matchesSearch && matchesCategory;
-      });
-
-      displayWebsites(filtered);
-    }
-
-    // Helper functions
-    function getFavicon(url) {
-      if (!url) return "fas fa-globe";
-
-      try {
-        const { hostname } = new URL(url);
-
-        if (hostname.includes("github.com")) return "fab fa-github";
-        if (hostname.includes("youtube.com")) return "fab fa-youtube";
-        if (hostname.includes("twitter.com")) return "fab fa-twitter";
-        if (hostname.includes("linkedin.com")) return "fab fa-linkedin";
-        if (hostname.includes("stackoverflow.com"))
-          return "fab fa-stack-overflow";
-        if (hostname.includes("medium.com")) return "fab fa-medium";
-        if (hostname.includes("codepen.io")) return "fab fa-codepen";
-        if (hostname.includes("gitlab.com")) return "fab fa-gitlab";
-        if (hostname.includes("bitbucket.org")) return "fab fa-bitbucket";
-
-        return "fas fa-globe";
-      } catch (e) {
-        return "fas fa-globe";
-      }
-    }
-
-    function getRandomColor() {
-      const colors = [
-        "#83d0f2",
-        "#f48024",
-        "#49bbbd",
-        "#a67c52",
-        "#6f42c1",
-        "#e83e8c",
-      ];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    function formatCategory(category) {
-      return category.charAt(0).toUpperCase() + category.slice(1);
-    }
-
-    function showEmptyState(message = "No resources found") {
-      emptyState.querySelector("h3").textContent = message;
-      emptyState.style.display = "flex";
-      websitesGrid.style.display = "none";
-    }
-
-    // Event listeners
-    searchInput.addEventListener("input", filterWebsites);
-    categoryFilter.addEventListener("change", filterWebsites);
-
-    // Initial load
-    loadWebsites();
-  });
-</script>
-
-<style>
-  /* Add styles for loading state */
   .loading-state {
     display: none;
     flex-direction: column;
@@ -418,7 +166,6 @@
     padding: 3rem 0;
     color: #7f8c8d;
   }
-
   .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     width: 36px;
@@ -428,78 +175,14 @@
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
   }
-
   @keyframes spin {
     0% {
-      transform: rotate(0deg);
+      transform: rotate(0);
     }
     100% {
       transform: rotate(360deg);
     }
   }
-
-  /* Update search and filter styles */
-  .search-container {
-    display: flex;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .search-box {
-    flex: 1;
-    position: relative;
-  }
-
-  .search-box input {
-    width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 0.95rem;
-  }
-
-  .search-box i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-  }
-
-  .filter-group {
-    min-width: 200px;
-  }
-
-  .filter-select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    background-color: white;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237f8c8d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    padding-right: 2.5rem;
-  }
-
-  /* Update header styles */
-  .websites-header {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
-
-  .header-actions {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  /* Empty state styles */
   .empty-state {
     display: none;
     flex-direction: column;
@@ -511,20 +194,177 @@
     border-radius: 8px;
     margin: 2rem 0;
   }
-
   .empty-state i {
     font-size: 3rem;
     color: #e0e0e0;
     margin-bottom: 1rem;
   }
-
-  .empty-state h3 {
-    margin: 0 0 0.5rem 0;
-    color: #2c3e50;
-  }
-
-  .empty-state p {
-    color: #7f8c8d;
-    margin-bottom: 1.5rem;
-  }
 </style>
+
+<script>
+  // ---- keys
+  const ADMIN_KEY = "elearn_admin_state_v1";
+  const LEGACY_KEY = "websites";
+
+  // ---- helpers
+  function parseJSON(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || fallback);
+    } catch {
+      return JSON.parse(fallback);
+    }
+  }
+  function getAdminState() {
+    return parseJSON(ADMIN_KEY, "{}");
+  }
+  function toArray(x) {
+    if (Array.isArray(x)) return x;
+    if (x && typeof x === "object") return Object.values(x);
+    return [];
+  }
+  // Merge admin + legacy, not either/or
+  function getAllWebsites() {
+    const adminArr = toArray(getAdminState().websites);
+    const legacyArr = toArray(parseJSON(LEGACY_KEY, "[]"));
+    // merge & dedupe by (id || url)
+    const out = [];
+    const seen = new Set();
+    [...adminArr, ...legacyArr].forEach((w) => {
+      const key = (w?.id || "") + "::" + (w?.url || "");
+      if (!seen.has(key)) {
+        seen.add(key);
+        out.push(w);
+      }
+    });
+    return out;
+  }
+  function normalizeUrl(u) {
+    if (!u) return "";
+    if (/^https?:\/\//i.test(u)) return u;
+    return "https://" + u; // safe default
+  }
+  function getFavicon(url) {
+    if (!url) return "fas fa-globe";
+    try {
+      const h = new URL(normalizeUrl(url)).hostname;
+      if (h.includes("github.com")) return "fab fa-github";
+      if (h.includes("youtube.com")) return "fab fa-youtube";
+      if (h.includes("twitter.com")) return "fab fa-twitter";
+      if (h.includes("linkedin.com")) return "fab fa-linkedin";
+      if (h.includes("stackoverflow.com")) return "fab fa-stack-overflow";
+      if (h.includes("medium.com")) return "fab fa-medium";
+      if (h.includes("codepen.io")) return "fab fa-codepen";
+      if (h.includes("gitlab.com")) return "fab fa-gitlab";
+      if (h.includes("bitbucket.org")) return "fab fa-bitbucket";
+    } catch {}
+    return "fas fa-globe";
+  }
+  function randColor() {
+    const colors = [
+      "#83d0f2",
+      "#f48024",
+      "#49bbbd",
+      "#a67c52",
+      "#6f42c1",
+      "#e83e8c",
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+  function formatCategory(c) {
+    c = String(c || "");
+    return c.charAt(0).toUpperCase() + c.slice(1);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const grid = document.getElementById("websites-grid");
+    const loading = document.getElementById("loading-state");
+    const empty = document.getElementById("empty-state");
+    const search = document.getElementById("search-websites");
+    const category = document.getElementById("category-filter");
+
+    let all = [];
+
+    function render(list) {
+      grid.innerHTML = "";
+      if (!list.length) {
+        empty.style.display = "flex";
+        grid.style.display = "none";
+        return;
+      }
+      empty.style.display = "none";
+      grid.style.display = "grid";
+
+      list.forEach((w) => {
+        const url = normalizeUrl(w.url);
+        let hostname = "";
+        try {
+          hostname = url ? new URL(url).hostname.replace("www.", "") : "";
+        } catch {}
+        const card = document.createElement("a");
+        card.href = url || "#";
+        card.target = "_blank";
+        card.rel = "noopener";
+        card.className = "website-card";
+        card.innerHTML = `
+          <div class="website-icon" style="background:${randColor()}">
+            <i class="${getFavicon(url)}"></i>
+          </div>
+          <div class="website-info">
+            <h3>${w.name || hostname || "Website"}</h3>
+            <p>${w.description || "No description available"}</p>
+            ${
+              w.category
+                ? `<span class="website-category">${formatCategory(
+                    w.category
+                  )}</span>`
+                : ""
+            }
+          </div>
+          <i class="fas fa-external-link-alt external-link"></i>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function applyFilters() {
+      const term = (search.value || "").toLowerCase();
+      const cat = (category.value || "").toLowerCase();
+      const filtered = all.filter((w) => {
+        const matchesTerm =
+          !term ||
+          (w.name && String(w.name).toLowerCase().includes(term)) ||
+          (w.description &&
+            String(w.description).toLowerCase().includes(term)) ||
+          (w.url && String(w.url).toLowerCase().includes(term));
+        const matchesCat =
+          !cat || (w.category && String(w.category).toLowerCase() === cat);
+        return matchesTerm && matchesCat;
+      });
+      render(filtered);
+    }
+
+    function load() {
+      loading.style.display = "flex";
+      empty.style.display = "none";
+      grid.innerHTML = "";
+      setTimeout(() => {
+        all = getAllWebsites();
+        loading.style.display = "none";
+        applyFilters();
+      }, 120);
+    }
+
+    search.addEventListener("input", applyFilters);
+    category.addEventListener("change", applyFilters);
+
+    // live update when admin saves or legacy changes
+    window.addEventListener("storage", (e) => {
+      if (e.key === ADMIN_KEY || e.key === LEGACY_KEY) {
+        all = getAllWebsites();
+        applyFilters();
+      }
+    });
+
+    load();
+  });
+</script>
