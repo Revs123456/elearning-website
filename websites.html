@@ -94,12 +94,15 @@
     background-position: right 0.75rem center;
     padding-right: 2.5rem;
   }
+
   .websites-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
   }
+
   .website-card {
+    position: relative; /* for the bookmark button */
     display: flex;
     align-items: center;
     padding: 1.25rem;
@@ -114,6 +117,7 @@
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
+
   .website-icon {
     width: 50px;
     height: 50px;
@@ -128,6 +132,7 @@
     font-size: 1.5rem;
     color: #fff;
   }
+
   .website-info {
     flex: 1;
   }
@@ -158,6 +163,39 @@
     color: #49bbbd;
   }
 
+  /* Bookmark button (same size/look as courses/shorts) */
+  .bookmark-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 0;
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: background 0.2s, transform 0.08s;
+    z-index: 2;
+  }
+  .bookmark-btn:hover {
+    background: #fff;
+  }
+  .bookmark-btn:active {
+    transform: translateY(1px) scale(0.98);
+  }
+  .bm-icon {
+    font-size: 18px;
+    color: #49bbbd;
+    transition: color 0.2s;
+  }
+  .bookmark-btn.saved .bm-icon {
+    color: #0ea5b7;
+  }
+
   .loading-state {
     display: none;
     flex-direction: column;
@@ -183,6 +221,7 @@
       transform: rotate(360deg);
     }
   }
+
   .empty-state {
     display: none;
     flex-direction: column;
@@ -202,11 +241,11 @@
 </style>
 
 <script>
-  // ---- keys
+  /* ---------- keys ----------- */
   const ADMIN_KEY = "elearn_admin_state_v1";
   const LEGACY_KEY = "websites";
 
-  // ---- helpers
+  /* ---------- state helpers ----------- */
   function parseJSON(key, fallback) {
     try {
       return JSON.parse(localStorage.getItem(key) || fallback);
@@ -217,18 +256,21 @@
   function getAdminState() {
     return parseJSON(ADMIN_KEY, "{}");
   }
-  function toArray(x) {
-    if (Array.isArray(x)) return x;
-    if (x && typeof x === "object") return Object.values(x);
-    return [];
+  function setAdminState(s) {
+    localStorage.setItem(ADMIN_KEY, JSON.stringify(s));
+    try {
+      window.dispatchEvent(new StorageEvent("storage", { key: ADMIN_KEY }));
+    } catch {}
   }
+  const toArray = (x) =>
+    Array.isArray(x) ? x : x && typeof x === "object" ? Object.values(x) : [];
+
   // Merge admin + legacy, not either/or
   function getAllWebsites() {
     const adminArr = toArray(getAdminState().websites);
     const legacyArr = toArray(parseJSON(LEGACY_KEY, "[]"));
-    // merge & dedupe by (id || url)
-    const out = [];
-    const seen = new Set();
+    const out = [],
+      seen = new Set();
     [...adminArr, ...legacyArr].forEach((w) => {
       const key = (w?.id || "") + "::" + (w?.url || "");
       if (!seen.has(key)) {
@@ -241,7 +283,7 @@
   function normalizeUrl(u) {
     if (!u) return "";
     if (/^https?:\/\//i.test(u)) return u;
-    return "https://" + u; // safe default
+    return "https://" + u;
   }
   function getFavicon(url) {
     if (!url) return "fas fa-globe";
@@ -275,6 +317,53 @@
     return c.charAt(0).toUpperCase() + c.slice(1);
   }
 
+  /* ---------- bookmark helpers (websites) ----------- */
+  const _ensureArr = (a) => (Array.isArray(a) ? a : []);
+  function websiteBookmarkId(w) {
+    const u = normalizeUrl(w.url || "");
+    return (w.id || u).toString().toLowerCase();
+  }
+  function isWebsiteBookmarked(w) {
+    const s = getAdminState();
+    const list = _ensureArr(s.bookmarks);
+    const id = websiteBookmarkId(w);
+    return list.some((b) => b._id === id);
+  }
+  function toggleWebsiteBookmark(w) {
+    const s = getAdminState();
+    const list = _ensureArr(s.bookmarks);
+    const id = websiteBookmarkId(w);
+    const ix = list.findIndex((b) => b._id === id);
+
+    if (ix >= 0) {
+      list.splice(ix, 1);
+    } else {
+      list.unshift({
+        _id: id,
+        category: "websites",
+        title: w.name || w.title || w.url || "Website",
+        url: normalizeUrl(w.url || ""),
+        meta: {
+          websiteId: w.id || null,
+          category: w.category || "",
+          description: w.description || "",
+        },
+      });
+    }
+    s.bookmarks = list;
+    setAdminState(s);
+  }
+  function bookmarkButtonHTML(w) {
+    const saved = isWebsiteBookmarked(w);
+    const iconClass = (saved ? "fas" : "far") + " fa-bookmark bm-icon";
+    const title = saved ? "Remove bookmark" : "Add bookmark";
+    const savedClass = saved ? " saved" : "";
+    return `<button class="bookmark-btn${savedClass}" title="${title}" aria-label="${title}">
+              <i class="${iconClass}"></i>
+            </button>`;
+  }
+
+  /* ---------- page wiring ----------- */
   document.addEventListener("DOMContentLoaded", () => {
     const grid = document.getElementById("websites-grid");
     const loading = document.getElementById("loading-state");
@@ -300,12 +389,14 @@
         try {
           hostname = url ? new URL(url).hostname.replace("www.", "") : "";
         } catch {}
-        const card = document.createElement("a");
-        card.href = url || "#";
-        card.target = "_blank";
-        card.rel = "noopener";
+
+        const card = document.createElement("div");
         card.className = "website-card";
+        card.dataset.url = url || "#"; // open on click
+        card._websiteData = w;
+
         card.innerHTML = `
+          ${bookmarkButtonHTML(w)}
           <div class="website-icon" style="background:${randColor()}">
             <i class="${getFavicon(url)}"></i>
           </div>
@@ -320,7 +411,7 @@
                 : ""
             }
           </div>
-          <i class="fas fa-external-link-alt external-link"></i>
+          <i class="fas fa-external-link-alt external-link" title="Open link"></i>
         `;
         grid.appendChild(card);
       });
@@ -354,8 +445,37 @@
       }, 120);
     }
 
+    // Search / filter
     search.addEventListener("input", applyFilters);
     category.addEventListener("change", applyFilters);
+
+    // Delegated clicks: bookmark toggle and open link
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".bookmark-btn");
+      if (btn) {
+        e.stopPropagation();
+        const card = btn.closest(".website-card");
+        const w = card?._websiteData;
+        if (!w) return;
+
+        toggleWebsiteBookmark(w);
+
+        const saved = isWebsiteBookmarked(w);
+        btn.classList.toggle("saved", saved);
+        const icon = btn.querySelector(".bm-icon");
+        icon.className = (saved ? "fas" : "far") + " fa-bookmark bm-icon";
+        btn.title = saved ? "Remove bookmark" : "Add bookmark";
+        btn.setAttribute("aria-label", btn.title);
+        return;
+      }
+
+      // Open link if clicked anywhere else on the card
+      const card = e.target.closest(".website-card");
+      if (card) {
+        const url = card.dataset.url || "#";
+        if (url && url !== "#") window.open(url, "_blank", "noopener");
+      }
+    });
 
     // live update when admin saves or legacy changes
     window.addEventListener("storage", (e) => {

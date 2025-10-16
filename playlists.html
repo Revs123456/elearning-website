@@ -1,305 +1,442 @@
-<div id="playlists-content">
-  <div class="playlists-container">
-    <div class="playlists-header">
-      <h2>My Playlists</h2>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Playlists</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
 
-    <!-- Loading -->
-    <div id="loading-state" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading playlists...</p>
-    </div>
+    <style>
+      .playlists-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      .playlists-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .playlists-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
 
-    <!-- Empty -->
-    <div id="empty-state" class="empty-state" style="display: none">
-      <i class="fas fa-music"></i>
-      <h3>No Playlists Found</h3>
-      <p>Currently there are no playlists to display.</p>
-    </div>
+      .playlist-card {
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        display: flex;
+        flex-direction: column;
+      }
+      .playlist-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+      .playlist-cover {
+        position: relative;
+        padding-top: 56.25%;
+        overflow: hidden;
+      }
+      .playlist-cover img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+      }
+      .playlist-card:hover .playlist-cover img {
+        opacity: 0.9;
+      }
+      .playlist-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .playlist-card:hover .playlist-overlay {
+        opacity: 1;
+      }
+      .play-button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #49bbbd;
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: transform 0.3s, background 0.3s;
+      }
+      .play-button:hover {
+        transform: scale(1.1);
+        background: #fff;
+      }
+      .playlist-info {
+        padding: 1.25rem;
+      }
+      .playlist-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        color: #2c3e50;
+      }
+      .playlist-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin: 0 0 0.75rem 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .tag {
+        display: inline-block;
+        background: #e9f9f9;
+        color: #49bbbd;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
 
-    <!-- Grid -->
-    <div id="playlists-grid" class="playlists-grid"></div>
-  </div>
-</div>
+      /* Loading + Empty */
+      .loading-state {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 0;
+        color: #7f8c8d;
+      }
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #49bbbd;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .empty-state {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin: 2rem 0;
+      }
+      .empty-state i {
+        font-size: 3rem;
+        color: #e0e0e0;
+        margin-bottom: 1rem;
+      }
 
-<style>
-  .playlists-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-  .playlists-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .playlists-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-  }
+      @media (max-width: 768px) {
+        .playlists-grid {
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+      }
+      @media (max-width: 480px) {
+        .playlists-grid {
+          grid-template-columns: 1fr;
+        }
+      }
 
-  .playlist-card {
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-    display: flex;
-    flex-direction: column;
-  }
-  .playlist-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
-  .playlist-cover {
-    position: relative;
-    padding-top: 56.25%;
-    overflow: hidden;
-  }
-  .playlist-cover img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.7;
-    transition: opacity 0.3s;
-  }
-  .playlist-card:hover .playlist-cover img {
-    opacity: 0.9;
-  }
-  .playlist-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .playlist-card:hover .playlist-overlay {
-    opacity: 1;
-  }
-  .play-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #49bbbd;
-    font-size: 1.25rem;
-    cursor: pointer;
-    transition: transform 0.3s, background 0.3s;
-  }
-  .play-button:hover {
-    transform: scale(1.1);
-    background: #fff;
-  }
-  .playlist-info {
-    padding: 1.25rem;
-  }
-  .playlist-title {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-    color: #2c3e50;
-  }
-  .playlist-description {
-    color: #666;
-    font-size: 0.9rem;
-    margin: 0 0 0.75rem 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .tag {
-    display: inline-block;
-    background: #e9f9f9;
-    color: #49bbbd;
-    font-size: 0.75rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .loading-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 0;
-    color: #7f8c8d;
-  }
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border-left-color: #49bbbd;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-  }
-  @keyframes spin {
-    0% {
-      transform: rotate(0);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  .empty-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 4rem 2rem;
-    background: #f9f9f9;
-    border-radius: 8px;
-    margin: 2rem 0;
-  }
-  .empty-state i {
-    font-size: 3rem;
-    color: #e0e0e0;
-    margin-bottom: 1rem;
-  }
-
-  @media (max-width: 768px) {
-    .playlists-grid {
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-  }
-  @media (max-width: 480px) {
-    .playlists-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
-
-<script>
-  const ADMIN_KEY = "elearn_admin_state_v1";
-
-  function getAdminState() {
-    try {
-      return JSON.parse(localStorage.getItem(ADMIN_KEY) || "{}");
-    } catch {
-      return {};
-    }
-  }
-  function toArray(x) {
-    if (Array.isArray(x)) return x;
-    if (x && typeof x === "object") return Object.values(x);
-    return [];
-  }
-  function getPlaylistsStrict() {
-    const s = getAdminState();
-    return toArray(s.playlists);
-  }
-  function purgeLegacyIfAdminExists() {
-    if (localStorage.getItem(ADMIN_KEY)) {
-      [
-        "home",
-        "courses",
-        "bookmarks",
-        "playlists",
-        "shorts",
-        "websites",
-      ].forEach((k) => {
-        try {
-          localStorage.removeItem(k);
-        } catch {}
-      });
-    }
-  }
-  function dedupeByIdOrTitle(list) {
-    const seen = new Set();
-    return list.filter((p) => {
-      const key = (p.id || "") + ":" + (p.title || "");
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    purgeLegacyIfAdminExists();
-
-    const grid = document.getElementById("playlists-grid");
-    const loading = document.getElementById("loading-state");
-    const empty = document.getElementById("empty-state");
-
-    const gradients = [
-      "linear-gradient(135deg,#49bbbd,#2c3e50)",
-      "linear-gradient(135deg,#E91E63,#9C27B0)",
-      "linear-gradient(135deg,#FF9800,#F44336)",
-      "linear-gradient(135deg,#4CAF50,#2196F3)",
-      "linear-gradient(135deg,#9C27B0,#3F51B5)",
-    ];
-
-    function createCard(p, idx) {
-      const card = document.createElement("div");
-      const gradient = gradients[idx % gradients.length];
-      card.className = "playlist-card";
-      card.innerHTML = `
-        <div class="playlist-cover" style="background:${gradient};">
-          <img src="https://source.unsplash.com/random/600x400?music&${Math.random()}" alt="${
-        p.title || "Playlist"
-      }">
-          <div class="playlist-overlay"><div class="play-button"><i class="fas fa-play"></i></div></div>
+      /* ===== Bookmark styles (same look/feel as courses) ===== */
+      .bookmark-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 0;
+        border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        transition: background 0.2s ease, transform 0.08s ease-in-out;
+        z-index: 2;
+      }
+      .bookmark-btn:hover {
+        background: #fff;
+      }
+      .bookmark-btn:active {
+        transform: translateY(1px) scale(0.98);
+      }
+      .bm-icon {
+        font-size: 22px; /* same size as courses */
+        color: #49bbbd;
+        transition: color 0.2s ease;
+      }
+      .bookmark-btn.saved .bm-icon {
+        color: #0ea5b7; /* filled teal when saved */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="playlists-content">
+      <div class="playlists-container">
+        <div class="playlists-header">
+          <h2>My Playlists</h2>
         </div>
-        <div class="playlist-info">
-          <h3 class="playlist-title">${p.title || "Untitled Playlist"}</h3>
-          ${
-            p.description
-              ? `<p class="playlist-description">${p.description}</p>`
-              : ""
-          }
-          ${p.category ? `<span class="tag">${p.category}</span>` : ""}
-        </div>`;
-      card.querySelector(".play-button").addEventListener("click", (e) => {
-        e.stopPropagation();
-        console.log("Playing:", p.title || "Untitled");
-      });
-      return card;
-    }
 
-    function render(list) {
-      grid.innerHTML = "";
-      if (!list.length) {
-        empty.style.display = "flex";
-        return;
+        <!-- Loading -->
+        <div id="loading-state" class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading playlists...</p>
+        </div>
+
+        <!-- Empty -->
+        <div id="empty-state" class="empty-state" style="display: none">
+          <i class="fas fa-music"></i>
+          <h3>No Playlists Found</h3>
+          <p>Currently there are no playlists to display.</p>
+        </div>
+
+        <!-- Grid -->
+        <div id="playlists-grid" class="playlists-grid"></div>
+      </div>
+    </div>
+
+    <script>
+      const ADMIN_KEY = "elearn_admin_state_v1";
+
+      /* --- Admin state helpers --- */
+      function readState() {
+        try {
+          return JSON.parse(localStorage.getItem(ADMIN_KEY) || "{}");
+        } catch {
+          return {};
+        }
       }
-      empty.style.display = "none";
-      list.forEach((p, i) => grid.appendChild(createCard(p, i)));
-    }
+      function writeState(s) {
+        localStorage.setItem(ADMIN_KEY, JSON.stringify(s));
+        try {
+          // notify other tabs/pages and listeners
+          window.dispatchEvent(new StorageEvent("storage", { key: ADMIN_KEY }));
+        } catch {}
+      }
+      function toArray(x) {
+        if (Array.isArray(x)) return x;
+        if (x && typeof x === "object") return Object.values(x);
+        return [];
+      }
+      function getPlaylistsStrict() {
+        return toArray(readState().playlists);
+      }
+      function purgeLegacyIfAdminExists() {
+        if (localStorage.getItem(ADMIN_KEY)) {
+          [
+            "home",
+            "courses",
+            "bookmarks",
+            "playlists",
+            "shorts",
+            "websites",
+          ].forEach((k) => {
+            try {
+              localStorage.removeItem(k);
+            } catch {}
+          });
+        }
+      }
 
-    function load() {
-      loading.style.display = "flex";
-      empty.style.display = "none";
-      grid.innerHTML = "";
-      let list = getPlaylistsStrict();
-      list = dedupeByIdOrTitle(list);
-      loading.remove();
-      render(list);
-    }
+      /* --- Bookmark (playlist) helpers: same pattern as courses --- */
+      function _ensureArr(a) {
+        return Array.isArray(a) ? a : [];
+      }
+      function playlistBookmarkId(p) {
+        // prefer provided id; else composite based on title
+        return (p.id || p.title || "untitled").toString().toLowerCase();
+      }
+      function isPlaylistBookmarked(p) {
+        const s = readState();
+        const list = _ensureArr(s.bookmarks);
+        const id = playlistBookmarkId(p);
+        return list.some((b) => b._id === id);
+      }
+      function togglePlaylistBookmark(p) {
+        const s = readState();
+        const list = _ensureArr(s.bookmarks);
+        const id = playlistBookmarkId(p);
+        const ix = list.findIndex((b) => b._id === id);
 
-    window.addEventListener("storage", (e) => {
-      if (e.key === ADMIN_KEY) {
+        if (ix >= 0) {
+          // remove
+          list.splice(ix, 1);
+        } else {
+          // add
+          list.unshift({
+            _id: id,
+            category: "playlists",
+            title: p.title || "Untitled Playlist",
+            url: "#",
+            meta: {
+              description: p.description || "",
+              playlistId: p.id || null,
+              category: p.category || "",
+            },
+          });
+        }
+        s.bookmarks = list;
+        writeState(s);
+      }
+      function bookmarkButtonHTML(p) {
+        const saved = isPlaylistBookmarked(p);
+        const iconClass = (saved ? "fas" : "far") + " fa-bookmark bm-icon";
+        const title = saved ? "Remove bookmark" : "Add bookmark";
+        const savedClass = saved ? " saved" : "";
+        return `<button class="bookmark-btn${savedClass}" title="${title}" aria-label="${title}">
+                  <i class="${iconClass}"></i>
+                </button>`;
+      }
+
+      /* --- Page bootstrap --- */
+      document.addEventListener("DOMContentLoaded", () => {
         purgeLegacyIfAdminExists();
-        render(dedupeByIdOrTitle(getPlaylistsStrict()));
-      }
-    });
 
-    load();
-  });
-</script>
+        const grid = document.getElementById("playlists-grid");
+        const loading = document.getElementById("loading-state");
+        const empty = document.getElementById("empty-state");
+
+        const gradients = [
+          "linear-gradient(135deg,#49bbbd,#2c3e50)",
+          "linear-gradient(135deg,#E91E63,#9C27B0)",
+          "linear-gradient(135deg,#FF9800,#F44336)",
+          "linear-gradient(135deg,#4CAF50,#2196F3)",
+          "linear-gradient(135deg,#9C27B0,#3F51B5)",
+        ];
+
+        function dedupeByIdOrTitle(list) {
+          const seen = new Set();
+          return list.filter((p) => {
+            const key = (p.id || "") + ":" + (p.title || "");
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+        }
+
+        function createCard(p, idx) {
+          const gradient = gradients[idx % gradients.length];
+          const card = document.createElement("div");
+          card.className = "playlist-card";
+          // keep data for event delegation
+          card._plData = p;
+
+          card.innerHTML = `
+            <div class="playlist-cover" style="background:${gradient};">
+              ${bookmarkButtonHTML(p)}
+              <img src="https://source.unsplash.com/random/600x400?music&${Math.random()}" alt="${
+            p.title || "Playlist"
+          }">
+              <div class="playlist-overlay">
+                <div class="play-button"><i class="fas fa-play"></i></div>
+              </div>
+            </div>
+            <div class="playlist-info">
+              <h3 class="playlist-title">${p.title || "Untitled Playlist"}</h3>
+              ${
+                p.description
+                  ? `<p class="playlist-description">${p.description}</p>`
+                  : ""
+              }
+              ${p.category ? `<span class="tag">${p.category}</span>` : ""}
+            </div>
+          `;
+          return card;
+        }
+
+        function render(list) {
+          grid.innerHTML = "";
+          if (!list.length) {
+            empty.style.display = "flex";
+            return;
+          }
+          empty.style.display = "none";
+          list.forEach((p, i) => grid.appendChild(createCard(p, i)));
+        }
+
+        function load() {
+          loading.style.display = "flex";
+          empty.style.display = "none";
+          grid.innerHTML = "";
+          let list = dedupeByIdOrTitle(getPlaylistsStrict());
+          loading.remove();
+          render(list);
+        }
+
+        // Bookmark toggle via event delegation
+        grid.addEventListener("click", (e) => {
+          const btn = e.target.closest(".bookmark-btn");
+          if (!btn) return;
+          const card = btn.closest(".playlist-card");
+          const data = card?._plData;
+          if (!data) return;
+
+          togglePlaylistBookmark(data);
+
+          // Refresh visual state (icon + button class)
+          const saved = isPlaylistBookmarked(data);
+          btn.classList.toggle("saved", saved);
+          const icon = btn.querySelector(".bm-icon");
+          icon.className = (saved ? "fas" : "far") + " fa-bookmark bm-icon";
+          btn.title = saved ? "Remove bookmark" : "Add bookmark";
+          btn.setAttribute("aria-label", btn.title);
+        });
+
+        // Play click
+        grid.addEventListener("click", (e) => {
+          const play = e.target.closest(".play-button");
+          if (!play) return;
+          const card = play.closest(".playlist-card");
+          const p = card?._plData;
+          if (p) console.log("Playing:", p.title || "Untitled");
+        });
+
+        // Live updates from Admin tab
+        window.addEventListener("storage", (e) => {
+          if (e.key === ADMIN_KEY) {
+            render(dedupeByIdOrTitle(getPlaylistsStrict()));
+          }
+        });
+
+        load();
+      });
+    </script>
+  </body>
+</html>

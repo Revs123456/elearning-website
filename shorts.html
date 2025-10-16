@@ -1,327 +1,473 @@
-<div id="shorts-content">
-  <div class="shorts-container">
-    <div class="shorts-header">
-      <h2>Learning Shorts</h2>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Learning Shorts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+      .shorts-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      .shorts-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .shorts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .short-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        position: relative;
+      }
+      .short-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Bookmark button (smaller, like playlist) */
+      .bookmark-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 0;
+        border-radius: 10px;
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        transition: background 0.2s ease, transform 0.08s ease-in-out;
+        z-index: 2;
+      }
+      .bookmark-btn:hover {
+        background: #fff;
+      }
+      .bookmark-btn:active {
+        transform: translateY(1px) scale(0.98);
+      }
+      .bm-icon {
+        font-size: 18px;
+        color: #49bbbd; /* outline state */
+        transition: color 0.2s ease;
+      }
+      .bookmark-btn.saved .bm-icon {
+        color: #0ea5b7; /* filled look when saved */
+      }
+
+      /* Thumbnail + centered play button */
+      .short-thumbnail {
+        position: relative;
+        /* keep your aspect ratio behavior */
+        padding-top: 56.25%;
+        background: #000;
+        overflow: hidden;
+      }
+      /* clickable play pill centered */
+      .play-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #49bbbd;
+        font-size: 1.2rem;
+        transition: transform 0.2s, background 0.3s;
+        z-index: 1;
+      }
+      .short-card:hover .play-btn {
+        transform: translate(-50%, -50%) scale(1.08);
+        background: #fff;
+      }
+
+      .short-duration {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .short-info {
+        padding: 1rem;
+      }
+      .short-creator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .creator-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .short-info h3 {
+        margin: 0 0 0.75rem 0;
+        font-size: 1rem;
+        color: #2c3e50;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .short-stats {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+      }
+
+      /* Loading + Empty */
+      .loading-state {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 0;
+        color: #7f8c8d;
+      }
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #49bbbd;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .empty-state {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin: 2rem 0;
+      }
+      .empty-state i {
+        font-size: 3rem;
+        color: #e0e0e0;
+        margin-bottom: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .shorts-grid {
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+      }
+      @media (max-width: 480px) {
+        .shorts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="shorts-content">
+      <div class="shorts-container">
+        <div class="shorts-header">
+          <h2>Learning Shorts</h2>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading-state" class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading shorts...</p>
+        </div>
+
+        <!-- Empty -->
+        <div id="empty-state" class="empty-state" style="display: none">
+          <i class="fas fa-video"></i>
+          <h3>No Shorts Found</h3>
+          <p>Currently there are no shorts to display.</p>
+        </div>
+
+        <!-- Grid -->
+        <div id="shorts-grid" class="shorts-grid"></div>
+      </div>
     </div>
 
-    <!-- Loading -->
-    <div id="loading-state" class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading shorts...</p>
-    </div>
+    <!-- Admin-only storage (no legacy fallback) -->
+    <script>
+      const ADMIN_KEY = "elearn_admin_state_v1";
 
-    <!-- Empty -->
-    <div id="empty-state" class="empty-state" style="display: none">
-      <i class="fas fa-video"></i>
-      <h3>No Shorts Found</h3>
-      <p>Currently there are no shorts to display.</p>
-    </div>
-
-    <!-- Grid -->
-    <div id="shorts-grid" class="shorts-grid"></div>
-  </div>
-</div>
-
-<style>
-  .shorts-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-  .shorts-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .shorts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-  }
-
-  .short-card {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-  }
-  .short-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .short-thumbnail {
-    position: relative;
-    padding-top: 56.25%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .short-thumbnail i {
-    font-size: 2.5rem;
-    color: #fff;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .short-card:hover .short-thumbnail i {
-    opacity: 1;
-  }
-  .short-duration {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-  }
-
-  .short-info {
-    padding: 1rem;
-  }
-  .short-creator {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .creator-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  .short-info h3 {
-    margin: 0 0 0.75rem 0;
-    font-size: 1rem;
-    color: #2c3e50;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .short-stats {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.85rem;
-    color: #7f8c8d;
-  }
-
-  .loading-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 0;
-    color: #7f8c8d;
-  }
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border-left-color: #49bbbd;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-  }
-  @keyframes spin {
-    0% {
-      transform: rotate(0);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .empty-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 4rem 2rem;
-    background: #f9f9f9;
-    border-radius: 8px;
-    margin: 2rem 0;
-  }
-  .empty-state i {
-    font-size: 3rem;
-    color: #e0e0e0;
-    margin-bottom: 1rem;
-  }
-
-  @media (max-width: 768px) {
-    .shorts-grid {
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-  }
-  @media (max-width: 480px) {
-    .shorts-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
-
-<!-- Admin-only storage (no legacy fallback) -->
-<script>
-  const ADMIN_KEY = "elearn_admin_state_v1";
-
-  function getAdminState() {
-    try {
-      return JSON.parse(localStorage.getItem(ADMIN_KEY) || "{}");
-    } catch {
-      return {};
-    }
-  }
-  function toArray(x) {
-    if (Array.isArray(x)) return x;
-    if (x && typeof x === "object") return Object.values(x);
-    return [];
-  }
-  function getShortsStrict() {
-    const s = getAdminState();
-    return toArray(s.shorts);
-  }
-  function purgeLegacyIfAdminExists() {
-    if (localStorage.getItem(ADMIN_KEY)) {
-      [
-        "home",
-        "courses",
-        "bookmarks",
-        "playlists",
-        "shorts",
-        "websites",
-      ].forEach((k) => {
+      function getAdminState() {
         try {
-          localStorage.removeItem(k);
+          return JSON.parse(localStorage.getItem(ADMIN_KEY) || "{}");
+        } catch {
+          return {};
+        }
+      }
+      function setAdminState(s) {
+        localStorage.setItem(ADMIN_KEY, JSON.stringify(s));
+        try {
+          window.dispatchEvent(new StorageEvent("storage", { key: ADMIN_KEY }));
         } catch {}
-      });
-    }
-  }
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    if (document.body.dataset.shortsInitialized === "1") return;
-    document.body.dataset.shortsInitialized = "1";
-
-    purgeLegacyIfAdminExists();
-
-    const grid = document.getElementById("shorts-grid");
-    const loading = document.getElementById("loading-state");
-    const empty = document.getElementById("empty-state");
-
-    const gradients = [
-      "linear-gradient(135deg, #FFE0B2, #FFB74D)",
-      "linear-gradient(135deg, #B3E5FC, #4FC3F7)",
-      "linear-gradient(135deg, #C8E6C9, #81C784)",
-      "linear-gradient(135deg, #F8BBD0, #F06292)",
-      "linear-gradient(135deg, #D1C4E9, #9575CD)",
-    ];
-
-    function dedupeById(arr) {
-      const seen = new Set();
-      return arr.filter((s) => {
-        const id = s.id || JSON.stringify([s.title, s.creator, s.duration]);
-        if (seen.has(id)) return false;
-        seen.add(id);
-        return true;
-      });
-    }
-
-    function formatDurationAny(value) {
-      if (typeof value === "string" && value.includes(":")) return value;
-      const secs = Math.max(0, Math.floor(Number(value) || 0));
-      const m = Math.floor(secs / 60),
-        s = secs % 60;
-      return `${m}:${s < 10 ? "0" : ""}${s}`;
-    }
-
-    function fmtNum(n) {
-      n = Number(n) || 0;
-      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-      if (n >= 1_000) return (n / 1_000).toFixed(1) + "k";
-      return String(n);
-    }
-
-    function createCard(short, idx) {
-      const gradient = gradients[idx % gradients.length];
-      const duration = formatDurationAny(short.duration);
-      const creator = short.creator || "Creator";
-      const avatarId = (idx % 10) + 1;
-      const hasThumb = !!(short.thumbnail && String(short.thumbnail).trim());
-
-      const card = document.createElement("div");
-      card.className = "short-card";
-      card.innerHTML = `
-        <div class="short-thumbnail" style="${
-          hasThumb
-            ? `background:#000; background-image:url('${short.thumbnail}'); background-size:cover; background-position:center;`
-            : `background:${gradient};`
-        }">
-          <i class="fas fa-play"></i>
-          <span class="short-duration">${duration}</span>
-        </div>
-        <div class="short-info">
-          <div class="short-creator">
-            <img class="creator-avatar" src="https://i.pravatar.cc/30?img=${avatarId}" alt="${creator}">
-            <span>${creator}</span>
-          </div>
-          <h3>${short.title || "Untitled Short"}</h3>
-          <div class="short-stats">
-            <span><i class="far fa-eye"></i> ${fmtNum(short.views)}</span>
-            <span><i class="far fa-thumbs-up"></i> ${fmtNum(short.likes)}</span>
-            <span><i class="far fa-comment"></i> ${fmtNum(
-              short.comments
-            )}</span>
-          </div>
-        </div>
-      `;
-      card.addEventListener("click", () =>
-        console.log("Playing:", short.title || "Untitled")
-      );
-      return card;
-    }
-
-    function render(list) {
-      grid.innerHTML = "";
-      empty.style.display = "none";
-      if (!list.length) {
-        empty.style.display = "flex";
-        return;
       }
-      list.forEach((s, i) => grid.appendChild(createCard(s, i)));
-    }
+      function toArray(x) {
+        if (Array.isArray(x)) return x;
+        if (x && typeof x === "object") return Object.values(x);
+        return [];
+      }
+      function getShortsStrict() {
+        return toArray(getAdminState().shorts);
+      }
+      function purgeLegacyIfAdminExists() {
+        if (localStorage.getItem(ADMIN_KEY)) {
+          [
+            "home",
+            "courses",
+            "bookmarks",
+            "playlists",
+            "shorts",
+            "websites",
+          ].forEach((k) => {
+            try {
+              localStorage.removeItem(k);
+            } catch {}
+          });
+        }
+      }
 
-    function load() {
-      loading.style.display = "flex";
-      empty.style.display = "none";
+      /* Bookmark helpers for SHORTS */
+      const _ensureArr = (a) => (Array.isArray(a) ? a : []);
+      function shortBookmarkId(s) {
+        return (
+          s.id || `${s.title || ""}|${s.creator || ""}|${s.duration || ""}`
+        )
+          .toString()
+          .toLowerCase();
+      }
+      function isShortBookmarked(s) {
+        const state = getAdminState();
+        const list = _ensureArr(state.bookmarks);
+        const id = shortBookmarkId(s);
+        return list.some((b) => b._id === id);
+      }
+      function toggleShortBookmark(s) {
+        const state = getAdminState();
+        const list = _ensureArr(state.bookmarks);
+        const id = shortBookmarkId(s);
+        const ix = list.findIndex((b) => b._id === id);
 
-      let list = getShortsStrict();
-      list = dedupeById(list);
+        if (ix >= 0) list.splice(ix, 1);
+        else
+          list.unshift({
+            _id: id,
+            category: "shorts",
+            title: s.title || "Untitled Short",
+            url: "#",
+            meta: {
+              shortId: s.id || null,
+              creator: s.creator || "",
+              duration: s.duration || "",
+              views: Number(s.views || 0),
+            },
+          });
 
-      loading.remove();
-      render(list);
-    }
+        state.bookmarks = list;
+        setAdminState(state);
+      }
+      function bookmarkButtonHTML(s) {
+        const saved = isShortBookmarked(s);
+        const iconClass = (saved ? "fas" : "far") + " fa-bookmark bm-icon";
+        const title = saved ? "Remove bookmark" : "Add bookmark";
+        const savedClass = saved ? " saved" : "";
+        return `<button class="bookmark-btn${savedClass}" title="${title}" aria-label="${title}">
+                  <i class="${iconClass}"></i>
+                </button>`;
+      }
+    </script>
 
-    window.addEventListener("storage", (e) => {
-      if (e.key === ADMIN_KEY) {
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (document.body.dataset.shortsInitialized === "1") return;
+        document.body.dataset.shortsInitialized = "1";
+
         purgeLegacyIfAdminExists();
-        let list = getShortsStrict();
-        list = dedupeById(list);
-        render(list);
-      }
-    });
 
-    load();
-  });
-</script>
+        const grid = document.getElementById("shorts-grid");
+        const loading = document.getElementById("loading-state");
+        const empty = document.getElementById("empty-state");
+
+        const gradients = [
+          "linear-gradient(135deg, #FFE0B2, #FFB74D)",
+          "linear-gradient(135deg, #B3E5FC, #4FC3F7)",
+          "linear-gradient(135deg, #C8E6C9, #81C784)",
+          "linear-gradient(135deg, #F8BBD0, #F06292)",
+          "linear-gradient(135deg, #D1C4E9, #9575CD)",
+        ];
+
+        function dedupeById(arr) {
+          const seen = new Set();
+          return arr.filter((s) => {
+            const id = s.id || JSON.stringify([s.title, s.creator, s.duration]);
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+          });
+        }
+
+        function formatDurationAny(value) {
+          if (typeof value === "string" && value.includes(":")) return value;
+          const secs = Math.max(0, Math.floor(Number(value) || 0));
+          const m = Math.floor(secs / 60),
+            s = secs % 60;
+          return `${m}:${s < 10 ? "0" : ""}${s}`;
+        }
+        function fmtNum(n) {
+          n = Number(n) || 0;
+          if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+          if (n >= 1_000) return (n / 1_000).toFixed(1) + "k";
+          return String(n);
+        }
+
+        function createCard(short, idx) {
+          const gradient = gradients[idx % gradients.length];
+          const duration = formatDurationAny(short.duration);
+          const creator = short.creator || "Creator";
+          const avatarId = (idx % 10) + 1;
+          const hasThumb = !!(
+            short.thumbnail && String(short.thumbnail).trim()
+          );
+
+          const card = document.createElement("div");
+          card.className = "short-card";
+          card._shortData = short;
+
+          card.innerHTML = `
+            <div class="short-thumbnail" style="${
+              hasThumb
+                ? `background-image:url('${short.thumbnail}');background-size:cover;background-position:center;`
+                : `background:${gradient};`
+            }">
+              ${bookmarkButtonHTML(short)}
+              <div class="play-btn"><i class="fas fa-play"></i></div>
+              <span class="short-duration">${duration}</span>
+            </div>
+            <div class="short-info">
+              <div class="short-creator">
+                <img class="creator-avatar" src="https://i.pravatar.cc/30?img=${avatarId}" alt="${creator}">
+                <span>${creator}</span>
+              </div>
+              <h3>${short.title || "Untitled Short"}</h3>
+              <div class="short-stats">
+                <span><i class="far fa-eye"></i> ${fmtNum(short.views)}</span>
+                <span><i class="far fa-thumbs-up"></i> ${fmtNum(
+                  short.likes
+                )}</span>
+                <span><i class="far fa-comment"></i> ${fmtNum(
+                  short.comments
+                )}</span>
+              </div>
+            </div>
+          `;
+          return card;
+        }
+
+        function render(list) {
+          grid.innerHTML = "";
+          empty.style.display = "none";
+          if (!list.length) {
+            empty.style.display = "flex";
+            return;
+          }
+          list.forEach((s, i) => grid.appendChild(createCard(s, i)));
+        }
+
+        function load() {
+          loading.style.display = "flex";
+          empty.style.display = "none";
+          let list = dedupeById(getShortsStrict());
+          loading.remove();
+          render(list);
+        }
+
+        // Toggle bookmark (delegated)
+        grid.addEventListener("click", (e) => {
+          const btn = e.target.closest(".bookmark-btn");
+          if (btn) {
+            e.stopPropagation();
+            const card = btn.closest(".short-card");
+            const data = card?._shortData;
+            if (!data) return;
+
+            toggleShortBookmark(data);
+
+            const saved = isShortBookmarked(data);
+            btn.classList.toggle("saved", saved);
+            const icon = btn.querySelector(".bm-icon");
+            icon.className = (saved ? "fas" : "far") + " fa-bookmark bm-icon";
+            btn.title = saved ? "Remove bookmark" : "Add bookmark";
+            btn.setAttribute("aria-label", btn.title);
+            return;
+          }
+
+          // Play
+          const play = e.target.closest(".play-btn");
+          if (play) {
+            const card = play.closest(".short-card");
+            const s = card?._shortData;
+            if (s) console.log("Playing:", s.title || "Untitled");
+          }
+        });
+
+        // Sync from other tabs
+        window.addEventListener("storage", (e) => {
+          if (e.key === ADMIN_KEY) {
+            let list = dedupeById(getShortsStrict());
+            render(list);
+          }
+        });
+
+        load();
+      });
+    </script>
+  </body>
+</html>
