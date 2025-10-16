@@ -1,3 +1,43 @@
+(function () {
+  const AUTH_KEY = "adminAuth";
+  const authed =
+    sessionStorage.getItem(AUTH_KEY) === "1" ||
+    localStorage.getItem(AUTH_KEY) === "1";
+  if (!authed) {
+    // not logged in — go back to login page
+    window.location.replace("index.html");
+  }
+})();
+// ===== Optional: add Logout button & show current admin =====
+document.addEventListener("DOMContentLoaded", () => {
+  const AUTH_KEY = "adminAuth";
+  const AUTH_USER_KEY = "adminUser";
+
+  const userSpan = document.getElementById("current-admin");
+  const name =
+    sessionStorage.getItem(AUTH_USER_KEY) ||
+    localStorage.getItem(AUTH_USER_KEY) ||
+    "Admin";
+  if (userSpan) userSpan.textContent = name;
+
+  const headerUser = document.querySelector(".user-info");
+  if (headerUser && !headerUser.querySelector(".logout-btn")) {
+    const btn = document.createElement("button");
+    btn.textContent = "Logout";
+    btn.className = "btn btn-ghost logout-btn";
+    btn.style.marginLeft = "12px";
+    btn.addEventListener("click", () => {
+      // clear both storage types to be safe
+      sessionStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem(AUTH_USER_KEY);
+      localStorage.removeItem(AUTH_USER_KEY);
+      window.location.replace("index.html");
+    });
+    headerUser.appendChild(btn);
+  }
+});
+
 // js/admin-fixed.js  (drop-in replacement)
 (() => {
   // ------- tiny utils -------
